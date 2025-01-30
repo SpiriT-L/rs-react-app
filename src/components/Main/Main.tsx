@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import CardList from '../CardList/CardList';
 
 class Main extends Component {
   state = {};
@@ -6,7 +7,9 @@ class Main extends Component {
     return (
       <main>
         <section>Search</section>
-        <section>Content</section>
+        <section>
+          <CardList />
+        </section>
       </main>
     );
   }
