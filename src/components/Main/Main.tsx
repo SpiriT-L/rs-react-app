@@ -1,8 +1,10 @@
 import { Component } from 'react';
+import { getCharacters } from '../../api/rickAndMortyApi';
+import { Character } from '../../types/Interface';
+import Button from '../Button/Button';
 import CardList from '../CardList/CardList';
 import Input from '../Input/Input';
-import { Character } from '../../types/Interface';
-import { getCharacters } from '../../api/rickAndMortyApi';
+import styles from './Main.module.scss';
 
 interface State {
   inputValue: string;
@@ -30,6 +32,14 @@ class Main extends Component<object, State> {
   };
 
   handleEnterPress = () => {
+    this.filterCharacters();
+  };
+
+  handleButtonClick = () => {
+    this.filterCharacters();
+  };
+
+  filterCharacters = () => {
     const { inputValue, characters } = this.state;
     const filteredCharacters = characters.filter((character) =>
       character.name.toLowerCase().includes(inputValue.toLowerCase())
@@ -43,12 +53,15 @@ class Main extends Component<object, State> {
     return (
       <main>
         <section>
-          <Input
-            label="Search:"
-            value={inputValue}
-            onChange={this.handleInputChange}
-            onEnter={this.handleEnterPress}
-          />
+          <div className={styles.searchContainer}>
+            <Input
+              // label="Search:"
+              value={inputValue}
+              onChange={this.handleInputChange}
+              onEnter={this.handleEnterPress}
+            />
+            <Button onClick={this.handleButtonClick}>Search</Button>
+          </div>
         </section>
         <section>
           <CardList characters={filteredCharacters} />
