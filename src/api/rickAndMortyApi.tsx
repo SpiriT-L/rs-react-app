@@ -1,5 +1,3 @@
-// ../../api/rickAndMortyApi.ts
-
 import { Character } from '../types/Interface';
 
 const API_URL = 'https://rickandmortyapi.com/api/character';

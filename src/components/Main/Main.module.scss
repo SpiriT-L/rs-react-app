@@ -1,6 +1,21 @@
 .searchContainer {
   display: flex;
+  flex-direction: column;
+  padding: 10px;
+  justify-content: flex-end;
+}
+
+.search{
+  display: flex;
   padding: 10px;
   justify-content: flex-end;
   align-items: center;
+}
+
+
+.error {
+  color: #ff4d4d;
+  margin-top: 5px;
+  font-size: 12px;
+  text-align: center;
 }
