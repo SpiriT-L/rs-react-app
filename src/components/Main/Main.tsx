@@ -3,6 +3,7 @@ import { getCharacters } from '../../api/rickAndMortyApi';
 import { Character } from '../../types/Interface';
 import Button from '../Button/Button';
 import CardList from '../CardList/CardList';
+import ErrorButton from '../ErrorButton/ErrorButton';
 import Input from '../Input/Input';
 import Loader from '../Loader/Loader';
 import styles from './Main.module.scss';
@@ -13,6 +14,7 @@ interface State {
   filteredCharacters: Character[];
   isLoading: boolean;
   error: string;
+  throwError: boolean;
 }
 
 class Main extends Component<object, State> {
@@ -24,6 +26,7 @@ class Main extends Component<object, State> {
       filteredCharacters: [],
       isLoading: true,
       error: '',
+      throwError: false,
     };
   }
 
@@ -98,7 +101,15 @@ class Main extends Component<object, State> {
     this.fetchAndFilterCharacters();
   };
 
+  handleThrowError = () => {
+    this.setState({ throwError: true });
+  };
+
   render() {
+    if (this.state.throwError) {
+      throw new Error('This error was intentionally triggered.');
+    }
+
     const { inputValue, filteredCharacters, isLoading, error } = this.state;
 
     return (
@@ -123,6 +134,9 @@ class Main extends Component<object, State> {
           ) : (
             <CardList characters={filteredCharacters} />
           )}
+        </section>
+        <section>
+          <ErrorButton onClick={this.handleThrowError} />
         </section>
       </main>
     );
