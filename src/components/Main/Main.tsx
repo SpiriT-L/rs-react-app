@@ -128,6 +128,7 @@ class Main extends Component<object, State> {
             {error && <div className={styles.error}>{error}</div>}
           </div>
         </section>
+        <hr className={styles.hr} />
         <section>
           {isLoading ? (
             <Loader />
