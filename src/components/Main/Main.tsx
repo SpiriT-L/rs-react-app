@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { getCharacters } from '../../api/rickAndMortyApi';
 import { Character } from '../../types/Interface';
 import Button from '../Button/Button';
@@ -8,140 +8,108 @@ import Input from '../Input/Input';
 import Loader from '../Loader/Loader';
 import styles from './Main.module.scss';
 
-interface State {
-  inputValue: string;
-  characters: Character[];
-  filteredCharacters: Character[];
-  isLoading: boolean;
-  error: string;
-  throwError: boolean;
-}
+const Main: FC = () => {
+  const [inputValue, setInputValue] = useState(
+    localStorage.getItem('searchQuery') || ''
+  );
 
-class Main extends Component<object, State> {
-  constructor(props: object) {
-    super(props);
-    this.state = {
-      inputValue: localStorage.getItem('searchQuery') || '',
-      characters: [],
-      filteredCharacters: [],
-      isLoading: true,
-      error: '',
-      throwError: false,
-    };
-  }
+  const [filteredCharacters, setFilteredCharacters] = useState<Character[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [throwError, setThrowError] = useState(false);
 
-  async componentDidMount() {
-    this.setState({ isLoading: true });
-    await this.fetchAndFilterCharacters();
-  }
+  useEffect(() => {
+    setIsLoading(true);
+    fetchAndFilterCharacters();
+  }, []);
 
-  handleInputChange = (value: string) => {
-    this.setState({ inputValue: value, error: '' });
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+    setError('');
   };
 
-  handleEnterPress = (valid: boolean) => {
+  const handleEnterPress = (valid: boolean) => {
     if (valid) {
-      this.filterCharactersAndStore();
+      filterCharactersAndStore();
     }
   };
 
-  handleButtonClick = () => {
-    this.filterCharactersAndStore();
+  const handleButtonClick = () => {
+    filterCharactersAndStore();
   };
 
-  handleError = (message: string) => {
-    this.setState({ error: message });
+  const handleError = (message: string) => {
+    setError(message);
   };
 
-  fetchAndFilterCharacters = async () => {
-    const { inputValue } = this.state;
-    this.setState({ isLoading: true });
+  const fetchAndFilterCharacters = async () => {
+    setIsLoading(true);
+    const characters = await getCharacters();
 
-    setTimeout(async () => {
-      const characters = await getCharacters();
-
-      if (inputValue.trim().length === 0) {
-        this.setState({
-          filteredCharacters: characters,
-          error: '',
-          isLoading: false,
-        });
-      } else if (inputValue.length < 3) {
-        this.setState({
-          error: 'The query must contain a minimum of three characters.',
-          isLoading: false,
-        });
+    if (inputValue.trim().length === 0) {
+      setFilteredCharacters(characters);
+      setError('');
+      setIsLoading(false);
+    } else if (inputValue.length < 3) {
+      setError('The query must contain a minimum of three characters.');
+      setIsLoading(false);
+    } else {
+      const filteredCharacters = characters.filter((character) =>
+        character.name.toLowerCase().includes(inputValue.toLowerCase())
+      );
+      if (filteredCharacters.length === 0) {
+        setError('No results found. Try changing the query.');
+        setIsLoading(false);
       } else {
-        const filteredCharacters = characters.filter((character) =>
-          character.name.toLowerCase().includes(inputValue.toLowerCase())
-        );
-        if (filteredCharacters.length === 0) {
-          this.setState({
-            error: 'No results found. Try changing the query.',
-            isLoading: false,
-          });
-        } else {
-          this.setState({
-            filteredCharacters,
-            error: '',
-            isLoading: false,
-          });
-        }
+        setFilteredCharacters(filteredCharacters);
+        setError('');
+        setIsLoading(false);
       }
-    }, 1000);
+    }
   };
 
-  filterCharactersAndStore = () => {
-    const { inputValue } = this.state;
+  const filterCharactersAndStore = () => {
     if (inputValue.trim().length === 0) {
       localStorage.removeItem('searchQuery');
     } else {
       localStorage.setItem('searchQuery', inputValue);
     }
-    this.fetchAndFilterCharacters();
+    fetchAndFilterCharacters();
   };
 
-  handleThrowError = () => {
-    this.setState({ throwError: true });
+  const handleThrowError = () => {
+    setThrowError(true);
   };
 
-  render() {
-    if (this.state.throwError) {
-      throw new Error('This error was intentionally triggered.');
-    }
-
-    const { inputValue, filteredCharacters, isLoading, error } = this.state;
-
-    return (
-      <main>
-        <section>
-          <div className={styles.searchContainer}>
-            <div className={styles.search}>
-              <Input
-                value={inputValue}
-                onChange={this.handleInputChange}
-                onEnter={this.handleEnterPress}
-                showError={this.handleError}
-              />
-              <Button onClick={this.handleButtonClick}>Search</Button>
-            </div>
-            {error && <div className={styles.error}>{error}</div>}
-          </div>
-        </section>
-        <hr className={styles.hr} />
-        <section>
-          {isLoading ? (
-            <Loader />
-          ) : (
-            <CardList characters={filteredCharacters} />
-          )}
-        </section>
-        <section>
-          <ErrorButton onClick={this.handleThrowError} />
-        </section>
-      </main>
-    );
+  if (throwError) {
+    throw new Error('This error was intentionally triggered.');
   }
-}
+
+  return (
+    <main>
+      <section>
+        <div className={styles.searchContainer}>
+          <div className={styles.search}>
+            <Input
+              value={inputValue}
+              onChange={handleInputChange}
+              onEnter={handleEnterPress}
+              showError={handleError}
+            />
+            <Button onClick={handleButtonClick}>Search</Button>
+          </div>
+          {error && <div className={styles.error}>{error}</div>}
+        </div>
+      </section>
+      <hr className={styles.hr} />
+      <section>
+        {isLoading ? <Loader /> : <CardList characters={filteredCharacters} />}
+      </section>
+      <section>
+        <ErrorButton onClick={handleThrowError} />
+      </section>
+    </main>
+  );
+};
 
 export default Main;
