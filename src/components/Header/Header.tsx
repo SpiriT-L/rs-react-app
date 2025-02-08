@@ -1,11 +1,8 @@
-import { Component } from 'react';
+import { FC } from 'react';
 import styles from './Header.module.scss';
 
-class Header extends Component {
-  state = {};
-  render() {
-    return <header className={styles.header}></header>;
-  }
-}
+const Header: FC = () => {
+  return <header className={styles.header}></header>;
+};
 
 export default Header;
