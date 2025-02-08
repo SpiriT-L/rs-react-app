@@ -9,7 +9,7 @@ interface CardListProps {
 
 const CardList: FC<CardListProps> = ({ characters }) => {
   return (
-    <div>
+    <div className={style.cardContainer}>
       <ul className={style.cardList}>
         {characters.map((character) => (
           <Card key={character.id} character={character} />

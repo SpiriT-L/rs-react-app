@@ -9,20 +9,22 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({ character }) => {
   return (
     <li className={style.card}>
+      <img className={style.img} src={character.image} alt={character.name} />
       <h2 className={style.title}>{character.name}</h2>
-      <img src={character.image} alt={character.name} />
       <p>
-        <span className={style.subTitle}>Status:</span> {character.status}
+        <span className={style.subTitle}>Status:</span>{' '}
+        <span className={style.description}>{character.status}</span>
       </p>
       <p>
         <span className={style.subTitle}>Species:</span> {character.species}
       </p>
       <p>
-        <span className={style.subTitle}>Location: </span>
-        {character.location.name}
+        <span className={style.subTitle}>Location: </span>{' '}
+        <span className={style.description}>{character.location.name}</span>
       </p>
       <p>
-        <span className={style.subTitle}>Origin:</span> {character.origin.name}
+        <span className={style.subTitle}>Origin:</span>{' '}
+        <span className={style.description}>{character.origin.name}</span>
       </p>
     </li>
   );
