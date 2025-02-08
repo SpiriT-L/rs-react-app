@@ -17,15 +17,17 @@ const useCharacters = () => {
           page,
           itemsPerPage
         );
-        setTotalPages(totalPages);
-        setCharacters(results);
-        setError('');
+        setTimeout(() => {
+          setTotalPages(totalPages);
+          setCharacters(results);
+          setError('');
+          setIsLoading(false);
+        }, 1000);
       } catch (err) {
         console.error('Error fetching characters:', err);
         setCharacters([]);
         setTotalPages(0);
         setError('An error occurred during data retrieval.');
-      } finally {
         setIsLoading(false);
       }
     },
