@@ -1,44 +1,38 @@
 import { useCallback, useState } from 'react';
-import { getCharacters } from '../api/rickAndMortyApi';
+import { getCharacters } from '../api/getCharacters';
 import { Character } from '../types/Interface';
 
 const useCharacters = () => {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [totalPages, setTotalPages] = useState(0);
 
-  const fetchCharacters = useCallback(async (inputValue: string) => {
-    setIsLoading(true);
-    try {
-      const characters = await getCharacters();
-      if (inputValue.trim().length === 0) {
-        setCharacters(characters);
-        setError('');
-      } else if (inputValue.length < 3) {
-        setCharacters([]);
-        setError('Enter at least 3 characters to filter');
-      } else {
-        const filteredCharacters = characters.filter((character) =>
-          character.name.toLowerCase().includes(inputValue.toLowerCase())
+  const fetchCharacters = useCallback(
+    async (inputValue: string, page: number, itemsPerPage: number) => {
+      setIsLoading(true);
+      try {
+        const { results, totalPages } = await getCharacters(
+          inputValue,
+          page,
+          itemsPerPage
         );
-        if (filteredCharacters.length === 0) {
-          setCharacters([]);
-          setError('No results found. Try changing the query.');
-        } else {
-          setCharacters(filteredCharacters);
-          setError('');
-        }
+        setTotalPages(totalPages);
+        setCharacters(results);
+        setError('');
+      } catch (err) {
+        console.error('Error fetching characters:', err);
+        setCharacters([]);
+        setTotalPages(0);
+        setError('An error occurred during data retrieval.');
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err) {
-      console.error('Error fetching characters:', err);
-      setCharacters([]);
-      setError('An error occurred during data retrieval.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    []
+  );
 
-  return { characters, isLoading, error, fetchCharacters };
+  return { characters, isLoading, error, fetchCharacters, totalPages };
 };
 
 export default useCharacters;
