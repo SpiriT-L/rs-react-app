@@ -10,4 +10,6 @@ export interface Character {
   origin: {
     name: string;
   };
+  gender: string;
+  type: string;
 }
