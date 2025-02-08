@@ -1,4 +1,4 @@
-main{
+main {
   margin-bottom: 2rem;
 }
 
@@ -9,13 +9,12 @@ main{
   justify-content: flex-end;
 }
 
-.search{
+.search {
   display: flex;
   padding: 10px;
   justify-content: flex-end;
   align-items: center;
 }
-
 
 .error {
   color: #ff4d4d;
@@ -24,7 +23,28 @@ main{
   text-align: center;
 }
 
-.hr{
+.hr {
   margin: 2rem 0;
   color: #f3f2f2;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+}
+
+.leftSection {
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.rightSection {
+  flex: 1;
+  border-left: 1px solid #f3f2f2;
+  padding-left: 1rem;
+  display: none; /* Скрыть секцию по умолчанию */
+}
+
+.rightSection.active {
+  display: block; /* Показать секцию, когда она активна */
 }
