@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { ChangeEvent, FC, KeyboardEvent, useState } from 'react';
 import styles from './input.module.scss';
 
 interface InputProps {
@@ -9,62 +9,51 @@ interface InputProps {
   showError: (message: string) => void;
 }
 
-interface InputState {
-  value: string;
-}
+const Input: FC<InputProps> = ({
+  label,
+  value: initialValue,
+  onChange,
+  onEnter,
+  showError,
+}) => {
+  const [value, setValue] = useState(initialValue.trim());
 
-class Input extends Component<InputProps, InputState> {
-  constructor(props: InputProps) {
-    super(props);
-    this.state = {
-      value: props.value.trim(),
-    };
-  }
-
-  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value.trimEnd();
-    this.setState({ value });
-    this.props.onChange(value);
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.target.value.trimEnd();
+    setValue(newValue);
+    onChange(newValue);
   };
 
-  handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
-      this.validateInput();
+      validateInput();
     }
   };
 
-  validateInput = () => {
-    const { value } = this.state;
-
+  const validateInput = () => {
     if (value.trim().length === 0) {
-      this.props.onEnter(true);
+      onEnter(true);
     } else if (value.length < 3) {
-      this.props.showError(
-        'The query must contain a minimum of three characters.'
-      );
-      this.props.onEnter(false);
+      showError('The query must contain a minimum of three characters.');
+      onEnter(false);
     } else {
-      this.props.onEnter(true);
+      onEnter(true);
     }
   };
 
-  render() {
-    const { label } = this.props;
-    const { value } = this.state;
-
-    return (
-      <div className={styles.inputContainer}>
-        {label && <label className={styles.label}>{label}</label>}
-        <input
-          type="text"
-          value={value}
-          onChange={this.handleChange}
-          onKeyPress={this.handleKeyPress}
-          className={styles.input}
-        />
-      </div>
-    );
-  }
-}
+  return (
+    <div className={styles.inputContainer}>
+      {label && <label className={styles.label}>{label}</label>}
+      <input
+        type="text"
+        value={value}
+        placeholder="Search"
+        onChange={handleChange}
+        onKeyPress={handleKeyPress}
+        className={styles.input}
+      />
+    </div>
+  );
+};
 
 export default Input;
