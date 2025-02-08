@@ -1,75 +1,53 @@
-import { FC, useState, useEffect } from 'react';
-import { getCharacters } from '../../api/rickAndMortyApi';
-import { Character } from '../../types/Interface';
+import { FC, useEffect, useState } from 'react';
+import useCharacters from '../../hooks/useCharacters';
+import useSearchQuery from '../../hooks/useSearchQuery';
 import Button from '../Button/Button';
 import CardList from '../CardList/CardList';
 import ErrorButton from '../ErrorButton/ErrorButton';
 import Input from '../Input/Input';
 import Loader from '../Loader/Loader';
-import useSearchQuery from '../../hooks/useSearchQuery';
 import styles from './Main.module.scss';
 
 const Main: FC = () => {
   const [inputValue, setInputValue] = useSearchQuery('searchQuery');
-  const [filteredCharacters, setFilteredCharacters] = useState<Character[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { characters, isLoading, error, fetchCharacters } = useCharacters();
   const [throwError, setThrowError] = useState(false);
+  const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
-    fetchAndFilterCharacters();
-  }, []);
+    if (inputValue.trim().length === 0) {
+      fetchCharacters('');
+      setShowResults(true);
+    } else {
+      const timer = setTimeout(() => {
+        fetchCharacters(inputValue).then(() => {
+          setShowResults(true);
+        });
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [inputValue, fetchCharacters]);
 
   const handleInputChange = (value: string) => {
     setInputValue(value);
-    setError('');
+    setShowResults(false);
   };
 
   const handleEnterPress = (valid: boolean) => {
     if (valid) {
-      filterCharactersAndStore();
+      setShowResults(false);
+      fetchCharacters(inputValue).then(() => {
+        setShowResults(true);
+      });
     }
   };
 
   const handleButtonClick = () => {
-    filterCharactersAndStore();
-  };
-
-  const handleError = (message: string) => {
-    setError(message);
-  };
-
-  const fetchAndFilterCharacters = async () => {
-    setIsLoading(true);
-    const characters = await getCharacters();
-
-    setTimeout(() => {
-      if (inputValue.trim().length === 0) {
-        setFilteredCharacters(characters);
-        setError('');
-        setIsLoading(false);
-      } else if (inputValue.length < 3) {
-        setError('The query must contain a minimum of three characters.');
-        setIsLoading(false);
-      } else {
-        const filteredCharacters = characters.filter((character) =>
-          character.name.toLowerCase().includes(inputValue.toLowerCase())
-        );
-        if (filteredCharacters.length === 0) {
-          setError('No results found. Try changing the query.');
-          setIsLoading(false);
-        } else {
-          setFilteredCharacters(filteredCharacters);
-          setError('');
-          setIsLoading(false);
-        }
-      }
-    }, 1000); // Задержка в 1 секунду
-  };
-
-  const filterCharactersAndStore = () => {
-    fetchAndFilterCharacters();
+    setShowResults(false);
+    fetchCharacters(inputValue).then(() => {
+      setShowResults(true);
+    });
   };
 
   const handleThrowError = () => {
@@ -77,7 +55,7 @@ const Main: FC = () => {
   };
 
   if (throwError) {
-    throw new Error('This error was intentionally triggered.');
+    throw new Error('This error was deliberately caused.');
   }
 
   return (
@@ -89,7 +67,7 @@ const Main: FC = () => {
               value={inputValue}
               onChange={handleInputChange}
               onEnter={handleEnterPress}
-              showError={handleError}
+              showError={(message: string) => console.log(message)}
             />
             <Button onClick={handleButtonClick}>Search</Button>
           </div>
@@ -98,7 +76,11 @@ const Main: FC = () => {
       </section>
       <hr className={styles.hr} />
       <section>
-        {isLoading ? <Loader /> : <CardList characters={filteredCharacters} />}
+        {isLoading || !showResults || error ? (
+          <Loader />
+        ) : (
+          <CardList characters={characters} />
+        )}
       </section>
       <section>
         <ErrorButton onClick={handleThrowError} />
