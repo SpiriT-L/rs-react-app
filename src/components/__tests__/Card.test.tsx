@@ -37,31 +37,31 @@ describe('Card Component', () => {
 
     expect(
       screen.queryByText(
-        (content, element) => element?.textContent === 'Status: Alive'
+        (_, element) => element?.textContent === 'Status: Alive'
       )
     ).toBeInTheDocument();
 
     expect(
       screen.queryByText(
-        (content, element) => element?.textContent === 'Species: Human'
+        (_, element) => element?.textContent === 'Species: Human'
       )
     ).toBeInTheDocument();
 
     expect(
       screen.queryByText(
-        (content, element) => element?.textContent === 'Gender: Male'
+        (_, element) => element?.textContent === 'Gender: Male'
       )
     ).toBeInTheDocument();
 
     expect(
       screen.queryByText(
-        (content, element) => element?.textContent === 'Location: Earth'
+        (_, element) => element?.textContent === 'Location: Earth'
       )
     ).toBeInTheDocument();
 
     expect(
       screen.queryByText(
-        (content, element) => element?.textContent === 'Origin: Earth'
+        (_, element) => element?.textContent === 'Origin: Earth'
       )
     ).toBeInTheDocument();
   });
