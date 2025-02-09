@@ -1,0 +1,40 @@
+import { useCallback, useState } from 'react';
+import { getCharacters } from '../api/getCharacters';
+import { Character } from '../types/Interface';
+
+const useCharacters = () => {
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [totalPages, setTotalPages] = useState(0);
+
+  const fetchCharacters = useCallback(
+    async (inputValue: string, page: number, itemsPerPage: number) => {
+      setIsLoading(true);
+      try {
+        const { results, totalPages } = await getCharacters(
+          inputValue,
+          page,
+          itemsPerPage
+        );
+        setTimeout(() => {
+          setTotalPages(totalPages);
+          setCharacters(results);
+          setError('');
+          setIsLoading(false);
+        }, 1000);
+      } catch (err) {
+        console.error('Error fetching characters:', err);
+        setCharacters([]);
+        setTotalPages(0);
+        setError('An error occurred during data retrieval.');
+        setIsLoading(false);
+      }
+    },
+    []
+  );
+
+  return { characters, isLoading, error, fetchCharacters, totalPages };
+};
+
+export default useCharacters;

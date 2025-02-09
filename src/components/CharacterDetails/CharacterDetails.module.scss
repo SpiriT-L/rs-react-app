@@ -1,0 +1,62 @@
+.characterDetails {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.detailCard {
+  display: flex;
+  flex-direction: column;
+}
+
+.closeButton {
+  position: absolute;
+  width: 66px;
+  top: 17px;
+  right: 17px;
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+
+  border-radius: 4px;
+  cursor: pointer;
+  &:hover {
+    background-color: #e60000;
+  }
+}
+
+.error {
+  color: #ff4d4d;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+h2 {
+  margin-top: 1rem;
+  color: #333;
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+p {
+  margin: 0.5rem 0;
+  color: #666;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.description {
+  font-style: italic;
+  font-weight: normal;
+}
