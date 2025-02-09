@@ -4,7 +4,7 @@ import useCharacters from '../../hooks/useCharacters';
 import useSearchQuery from '../../hooks/useSearchQuery';
 import Button from '../Button/Button';
 import CardList from '../CardList/CardList';
-import CharacterDetails from '../CharacterDetails/CharacterDetails'; // Новый компонент
+import CharacterDetails from '../CharacterDetails/CharacterDetails';
 import ErrorButton from '../ErrorButton/ErrorButton';
 import Input from '../Input/Input';
 import Loader from '../Loader/Loader';
@@ -21,7 +21,7 @@ const Main: FC = () => {
   const [showResults, setShowResults] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
-  const selectedCharacterId = searchParams.get('details'); // Новый параметр
+  const selectedCharacterId = searchParams.get('details');
 
   useEffect(() => {
     fetchCharacters(inputValue, currentPage, ITEMS_PER_PAGE).then(() => {
@@ -31,7 +31,7 @@ const Main: FC = () => {
 
   const handleInputChange = (value: string) => {
     setInputValue(value);
-    setSearchParams({ page: '1' }); // Сброс страницы на первую при изменении ввода
+    setSearchParams({ page: '1' });
     setShowResults(false);
   };
 
