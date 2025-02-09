@@ -4,7 +4,7 @@ import style from './Card.module.scss';
 
 interface CardProps {
   character: Character;
-  onClick: () => void; // Новый пропс
+  onClick: () => void;
 }
 
 const Card: React.FC<CardProps> = ({ character, onClick }) => {

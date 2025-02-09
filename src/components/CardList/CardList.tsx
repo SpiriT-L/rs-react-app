@@ -13,6 +13,12 @@ const CardList: FC<CardListProps> = ({ characters, onCharacterClick }) => {
     onCharacterClick(id);
   };
 
+  if (characters.length === 0) {
+    return (
+      <p className={styles.noCharactersMessage}>No characters available</p>
+    );
+  }
+
   return (
     <div className={styles.cardContainer}>
       <ul className={styles.cardList}>
@@ -20,7 +26,7 @@ const CardList: FC<CardListProps> = ({ characters, onCharacterClick }) => {
           <Card
             key={character.id}
             character={character}
-            onClick={() => handleCardClick(character.id.toString())} // Преобразование id в строку
+            onClick={() => handleCardClick(character.id.toString())}
           />
         ))}
       </ul>
