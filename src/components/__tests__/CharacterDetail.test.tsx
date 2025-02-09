@@ -3,8 +3,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import useCharacterDetails from '../../hooks/useCharacterDetails';
 import CharacterDetails from '../CharacterDetails/CharacterDetails';
 
-vi.mock('../../hooks/useCharacterDetails');
-
 const mockCharacterDetails = {
   character: {
     id: 1,
@@ -21,20 +19,25 @@ const mockCharacterDetails = {
   error: null,
 };
 
+// Mocking the hook manually
+vi.mock('../../hooks/useCharacterDetails');
+
+const mockedUseCharacterDetails = useCharacterDetails as jest.Mock;
+
 describe('CharacterDetails Component', () => {
   beforeEach(() => {
-    (useCharacterDetails as vi.Mock).mockReturnValue(mockCharacterDetails);
+    mockedUseCharacterDetails.mockReturnValue(mockCharacterDetails);
   });
 
   it('fetches detailed information on component render', async () => {
     render(<CharacterDetails characterId="1" onClose={() => {}} />);
 
     expect(screen.getByText('Rick Sanchez')).toBeInTheDocument();
-    expect(useCharacterDetails).toHaveBeenCalledWith('1');
+    expect(mockedUseCharacterDetails).toHaveBeenCalledWith('1');
   });
 
   it('displays loading indicator while fetching data', () => {
-    (useCharacterDetails as vi.Mock).mockReturnValue({
+    mockedUseCharacterDetails.mockReturnValue({
       ...mockCharacterDetails,
       isLoading: true,
     });
