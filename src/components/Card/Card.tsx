@@ -3,7 +3,7 @@ import { Character } from '../../types/Interface';
 import style from './Card.module.scss';
 
 interface CardProps {
-  character: Character;
+  character?: Character;
   onClick?: () => void;
   name: string;
   image: string;
