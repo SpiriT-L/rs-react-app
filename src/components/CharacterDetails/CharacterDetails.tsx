@@ -1,7 +1,9 @@
 import { FC } from 'react';
 import useCharacterDetails from '../../hooks/useCharacterDetails';
+import { Character } from '../../types/Interface';
+import Card from '../Card/Card';
 import Loader from '../Loader/Loader';
-import styles from './CharacterDetails.module.scss';
+import style from './CharacterDetails.module.scss';
 
 interface CharacterDetailsProps {
   characterId: string;
@@ -18,50 +20,35 @@ const CharacterDetails: FC<CharacterDetailsProps> = ({
     onClose();
   };
 
+  const isCharacter = (char: Character | null): char is Character => {
+    return char !== null;
+  };
+
   return (
-    <div className={styles.characterDetails}>
+    <div className={style.characterDetails}>
       {isLoading ? (
         <Loader />
       ) : error ? (
-        <div className={styles.error}>{error}</div>
+        <div className={style.error}>{error}</div>
       ) : (
-        <div>
-          <button className={styles.closeButton} onClick={handleCloseClick}>
-            Close
-          </button>
-          <h2>{character?.name}</h2>
-          <img src={character?.image} alt={character?.name} />
-          <p>
-            Status:{' '}
-            <span className={styles.description}>{character?.status}</span>
-          </p>
-          <p>
-            Species:{' '}
-            <span className={styles.description}>{character?.species}</span>
-          </p>
-          {character?.type && (
-            <p>
-              Type:{' '}
-              <span className={styles.description}>{character?.type}</span>
-            </p>
-          )}
-          <p>
-            Gender:{' '}
-            <span className={styles.description}>{character?.gender}</span>
-          </p>
-          {character?.location.name && (
-            <p>
-              Location:{' '}
-              <span className={styles.description}>
-                {character?.location.name}
-              </span>
-            </p>
-          )}
-          <p>
-            Origin:{' '}
-            <span className={styles.description}>{character?.origin.name}</span>
-          </p>
-        </div>
+        isCharacter(character) && (
+          <div className={style.detailCard}>
+            <button className={style.closeButton} onClick={handleCloseClick}>
+              Close
+            </button>
+            <Card
+              character={character}
+              name={character.name}
+              image={character.image}
+              status={character.status}
+              species={character.species}
+              type={character.type}
+              gender={character.gender}
+              locationName={character.location.name}
+              originName={character.origin.name}
+            />
+          </div>
+        )
       )}
     </div>
   );

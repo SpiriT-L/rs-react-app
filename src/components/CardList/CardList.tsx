@@ -26,6 +26,8 @@ const CardList: FC<CardListProps> = ({ characters, onCharacterClick }) => {
           <Card
             key={character.id}
             character={character}
+            name={character.name}
+            image={character.image}
             onClick={() => handleCardClick(character.id.toString())}
           />
         ))}
