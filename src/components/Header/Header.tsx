@@ -4,7 +4,7 @@ import styles from './Header.module.scss';
 const Header: FC = () => {
   return (
     <header className={styles.header}>
-      <h1>My Awesome App</h1>
+      <h1 className={styles.title}>Rick & Morty</h1>
     </header>
   );
 };
