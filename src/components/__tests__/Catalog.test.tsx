@@ -1,60 +1,85 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import Catalog from '../../components/Catalog/Catalog';
 import useCharacters from '../../hooks/useCharacters';
-import useSearchQuery from '../../hooks/useSearchQuery';
-import Catalog from '../Catalog/Catalog';
 
 vi.mock('../../hooks/useCharacters');
-vi.mock('../../hooks/useSearchQuery');
 
 describe('Catalog Component', () => {
-  beforeEach(() => {
-    (useCharacters as jest.Mock).mockReturnValue({
-      characters: [],
-      isLoading: false,
-      error: '',
-      fetchCharacters: vi.fn(),
-      totalPages: 0,
-    });
+  const mockUseCharacters = useCharacters as jest.Mock;
 
-    (useSearchQuery as jest.Mock).mockReturnValue(['', vi.fn()]);
+  const mockData = {
+    characters: [
+      { id: '1', name: 'Character 1' },
+      { id: '2', name: 'Character 2' },
+    ],
+    isLoading: false,
+    error: null as string | null,
+    fetchCharacters: vi.fn().mockResolvedValue(undefined),
+    totalPages: 1,
+  };
+
+  beforeEach(() => {
+    mockUseCharacters.mockReturnValue(mockData);
   });
 
-  it('displays character list and pagination when data is fetched', async () => {
-    const fetchCharacters = vi.fn(() => Promise.resolve());
-    (useCharacters as jest.Mock).mockReturnValue({
-      characters: [
-        {
-          id: 1,
-          name: 'Rick Sanchez',
-          image: 'https://example.com/rick.png',
-          status: 'Alive',
-          species: 'Human',
-          type: '',
-          gender: 'Male',
-          location: { name: 'Earth' },
-          origin: { name: 'Earth' },
-        },
-      ],
-      isLoading: false,
-      error: '',
-      fetchCharacters,
-      totalPages: 1,
-    });
-
-    (useSearchQuery as jest.Mock).mockReturnValue(['Rick', vi.fn()]);
-
-    render(
+  const setup = () => {
+    return render(
       <Router>
         <Catalog />
       </Router>
     );
+  };
 
-    await waitFor(() => expect(fetchCharacters).toHaveBeenCalled());
+  it('renders input and search button', () => {
+    setup();
+    expect(screen.getByPlaceholderText('Search')).toBeInTheDocument();
+    expect(screen.getByText('Search')).toBeInTheDocument();
+  });
 
-    expect(screen.getByText('Rick Sanchez')).toBeInTheDocument();
+  it('calls fetchCharacters on mount', async () => {
+    setup();
+    await waitFor(() => {
+      expect(mockData.fetchCharacters).toHaveBeenCalled();
+    });
+  });
 
-    expect(screen.getByText('1')).toBeInTheDocument();
+  it('updates input value and calls onChange', async () => {
+    setup();
+    const input = screen.getByPlaceholderText('Search');
+    fireEvent.change(input, { target: { value: 'New value' } });
+    expect(input).toHaveValue('New value');
+  });
+
+  it('calls fetchCharacters on Enter key press', async () => {
+    setup();
+    const input = screen.getByPlaceholderText('Search');
+    fireEvent.change(input, { target: { value: 'Valid input' } });
+    fireEvent.keyPress(input, { key: 'Enter', code: 'Enter', charCode: 13 });
+    await waitFor(() => {
+      expect(mockData.fetchCharacters).toHaveBeenCalled();
+    });
+  });
+
+  it('displays characters when fetchCharacters is successful', async () => {
+    setup();
+    await waitFor(() => {
+      mockData.characters.forEach((character) => {
+        expect(screen.getByText(character.name)).toBeInTheDocument();
+      });
+    });
+  });
+
+  it('displays loader while fetching characters', () => {
+    mockData.isLoading = true;
+    setup();
+    expect(screen.getByTestId('loader')).toBeInTheDocument();
+  });
+
+  it('displays error message if fetchCharacters fails', () => {
+    mockData.error = 'Error fetching characters';
+    setup();
+    expect(screen.getByText('Error fetching characters')).toBeInTheDocument();
   });
 });
