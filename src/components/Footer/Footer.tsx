@@ -8,6 +8,8 @@ const Footer: FC = () => {
         <li className={styles.itemList}>
           <a
             className={styles.linkList}
+            target="_blank"
+            rel="noopener noreferrer"
             href="https://rs.school/courses/reactjs"
           >
             RSSchool
@@ -15,7 +17,12 @@ const Footer: FC = () => {
         </li>
         <li className={styles.itemList}>React 2025 Q1</li>
         <li className={styles.itemList}>
-          <a className={styles.linkList} href="https://github.com/SpiriT-L">
+          <a
+            className={styles.linkList}
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://github.com/SpiriT-L"
+          >
             GitHub
           </a>
         </li>
