@@ -7,6 +7,9 @@
 html,
 body {
   height: 100%;
+  font-family: 'rickandmorty';
+  font-size: 1rem;
+  text-decoration: none;
 }
 
 html {
