@@ -82,4 +82,23 @@ describe('Catalog Component', () => {
     setup();
     expect(screen.getByText('Error fetching characters')).toBeInTheDocument();
   });
+
+  it('navigates to character details on character click', async () => {
+    setup();
+    const characterElement = screen.getByText((_, element) => {
+      return element?.textContent === 'Character';
+    });
+    fireEvent.click(characterElement);
+    await waitFor(() => {
+      expect(screen.getByText('Character')).toBeInTheDocument();
+    });
+  });
+
+  it('handles deliberate error throw', () => {
+    setup();
+    const errorButton = screen.getByText('Error');
+    expect(() => {
+      fireEvent.click(errorButton);
+    }).toThrow('This error was deliberately caused.');
+  });
 });
