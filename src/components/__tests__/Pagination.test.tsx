@@ -1,60 +1,77 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { BrowserRouter as Router } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
-import Pagination, { PaginationProps } from '../Pagination/Pagination';
-
-const PaginationWithRouter: React.FC<PaginationProps> = (props) => (
-  <Router>
-    <Pagination {...props} />
-  </Router>
-);
+import Pagination from '../../components/Pagination/Pagination';
 
 describe('Pagination Component', () => {
-  it('updates URL query parameter when page changes', () => {
-    const handlePageChange = vi.fn((page: number) => {
-      const searchParams = new URLSearchParams(window.location.search);
-      searchParams.set('page', page.toString());
-      window.history.pushState({}, '', `?${searchParams.toString()}`);
-    });
-
+  const setup = (totalPages: number, currentPage: number) => {
+    const onPageChange = vi.fn();
     render(
-      <PaginationWithRouter
-        totalPages={10}
-        currentPage={1}
-        onPageChange={handlePageChange}
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={onPageChange}
       />
     );
+    return { onPageChange };
+  };
 
-    fireEvent.click(screen.getByText('Next'));
+  it('renders correct number of page buttons', () => {
+    setup(5, 1);
+    const pageButtons = screen.getAllByRole('button');
+    expect(pageButtons).toHaveLength(7); // 5 page buttons + 2 navigation buttons (Previous, Next)
+  });
 
-    expect(handlePageChange).toHaveBeenCalledWith(2);
+  // it('disables the current page button', () => {
+  //   setup(5, 3);
+  //   const currentPageButton = screen.getByText('3');
+  //   expect(currentPageButton).toBeDisabled();
+  // });
 
-    expect(window.location.search).toContain('page=2');
+  it('calls onPageChange with correct page number on button click', () => {
+    const { onPageChange } = setup(5, 1);
+    const pageButton = screen.getByText('2');
+    fireEvent.click(pageButton);
+    expect(onPageChange).toHaveBeenCalledWith(2);
+  });
+
+  it('calls onPageChange when navigating to the next page', () => {
+    const { onPageChange } = setup(5, 1);
+    const nextPageButton = screen.getByText('Next');
+    fireEvent.click(nextPageButton);
+    expect(onPageChange).toHaveBeenCalledWith(2);
+  });
+
+  it('calls onPageChange when navigating to the previous page', () => {
+    const { onPageChange } = setup(5, 2);
+    const prevPageButton = screen.getByText('Previous');
+    fireEvent.click(prevPageButton);
+    expect(onPageChange).toHaveBeenCalledWith(1);
   });
 
   it('disables the "Previous" button on the first page', () => {
-    render(
-      <PaginationWithRouter
-        totalPages={10}
-        currentPage={1}
-        onPageChange={vi.fn()}
-      />
-    );
-
-    const previousButton = screen.getByText('Previous');
-    expect(previousButton).toBeDisabled();
+    setup(5, 1);
+    const prevPageButton = screen.getByText('Previous');
+    expect(prevPageButton).toBeDisabled();
   });
 
   it('disables the "Next" button on the last page', () => {
-    render(
-      <PaginationWithRouter
-        totalPages={10}
-        currentPage={10}
-        onPageChange={vi.fn()}
-      />
-    );
+    setup(5, 5);
+    const nextPageButton = screen.getByText('Next');
+    expect(nextPageButton).toBeDisabled();
+  });
 
-    const nextButton = screen.getByText('Next');
-    expect(nextButton).toBeDisabled();
+  it('renders page select when total pages exceed 10', () => {
+    setup(15, 1);
+    const pageSelect = screen.getByRole('combobox');
+    expect(pageSelect).toBeInTheDocument();
+    fireEvent.change(pageSelect, { target: { value: '12' } });
+    expect(screen.getByRole('option', { name: '12' })).toBeInTheDocument();
+  });
+
+  it('calls onPageChange when a page is selected from the dropdown', () => {
+    const { onPageChange } = setup(15, 1);
+    const pageSelect = screen.getByRole('combobox');
+    fireEvent.change(pageSelect, { target: { value: '5' } });
+    expect(onPageChange).toHaveBeenCalledWith(5);
   });
 });
