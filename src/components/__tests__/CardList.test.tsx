@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import { Character } from '../../types/Interface';
 import CardList from '../CardList/CardList';
 
@@ -41,5 +41,30 @@ describe('CardList component', () => {
     render(<CardList characters={[]} onCharacterClick={() => {}} />);
     const message = screen.getByText(/no characters available/i);
     expect(message).toBeInTheDocument();
+  });
+
+  it('calls onCharacterClick when a card is clicked', () => {
+    const handleCharacterClick = vi.fn();
+    render(
+      <CardList
+        characters={mockCharacters}
+        onCharacterClick={handleCharacterClick}
+      />
+    );
+    const card = screen.getByText(/Rick Sanchez/i);
+    fireEvent.click(card);
+    expect(handleCharacterClick).toHaveBeenCalledWith('1');
+  });
+
+  it('renders the correct character names and images', () => {
+    render(
+      <CardList characters={mockCharacters} onCharacterClick={() => {}} />
+    );
+    mockCharacters.forEach((character) => {
+      const nameElement = screen.getByText(character.name);
+      const imageElement = screen.getByAltText(character.name);
+      expect(nameElement).toBeInTheDocument();
+      expect(imageElement).toBeInTheDocument();
+    });
   });
 });
