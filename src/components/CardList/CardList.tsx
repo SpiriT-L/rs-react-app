@@ -1,12 +1,7 @@
 import { FC } from 'react';
-import { Character } from '../../types/Interface';
+import { CardListProps } from '../../types/Interface';
 import Card from '../Card/Card';
 import styles from './CardList.module.scss';
-
-interface CardListProps {
-  characters: Character[];
-  onCharacterClick: (id: string) => void;
-}
 
 const CardList: FC<CardListProps> = ({ characters, onCharacterClick }) => {
   const handleCardClick = (id: string) => {

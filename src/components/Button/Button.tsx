@@ -1,10 +1,6 @@
-import { ReactNode, FC } from 'react';
+import { FC } from 'react';
 import styles from './Button.module.scss';
-
-interface ButtonProps {
-  onClick: () => void;
-  children: ReactNode;
-}
+import { ButtonProps } from '../../types/Interface';
 
 const Button: FC<ButtonProps> = ({ onClick, children }) => {
   return (

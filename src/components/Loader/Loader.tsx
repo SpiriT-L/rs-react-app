@@ -1,9 +1,6 @@
 import { FC } from 'react';
 import styles from './Loader.module.scss';
-
-interface LoadingProps {
-  message?: string;
-}
+import { LoadingProps } from '../../types/Interface';
 
 const Loading: FC<LoadingProps> = ({ message = 'Loading...' }) => {
   return (

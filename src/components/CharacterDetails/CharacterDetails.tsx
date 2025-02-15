@@ -1,14 +1,9 @@
 import { FC } from 'react';
 import useCharacterDetails from '../../hooks/useCharacterDetails';
-import { Character } from '../../types/Interface';
+import { Character, CharacterDetailsProps } from '../../types/Interface';
 import Card from '../Card/Card';
 import Loader from '../Loader/Loader';
 import style from './CharacterDetails.module.scss';
-
-interface CharacterDetailsProps {
-  characterId: string;
-  onClose: () => void;
-}
 
 const CharacterDetails: FC<CharacterDetailsProps> = ({
   characterId,

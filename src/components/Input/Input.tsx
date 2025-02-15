@@ -1,13 +1,6 @@
 import { ChangeEvent, FC, KeyboardEvent, useState } from 'react';
+import { InputProps } from '../../types/Interface';
 import styles from './input.module.scss';
-
-interface InputProps {
-  label?: string;
-  value: string;
-  onChange: (value: string) => void;
-  onEnter: (valid: boolean) => void;
-  showError: (message: string) => void;
-}
 
 const Input: FC<InputProps> = ({
   label,

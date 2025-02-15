@@ -1,19 +1,6 @@
 import React from 'react';
-import { Character } from '../../types/Interface';
+import { CardProps } from '../../types/Interface';
 import style from './Card.module.scss';
-
-interface CardProps {
-  character?: Character;
-  onClick?: () => void;
-  name: string;
-  image: string;
-  status?: string;
-  species?: string;
-  type?: string;
-  gender?: string;
-  locationName?: string;
-  originName?: string;
-}
 
 const Card: React.FC<CardProps> = ({
   onClick,
