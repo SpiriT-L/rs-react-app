@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from './Pagination.module.scss';
 import { PaginationProps } from '../../types/Interface';
+import styles from './Pagination.module.scss';
 
 const Pagination: React.FC<PaginationProps> = ({
   totalPages,
@@ -31,6 +31,7 @@ const Pagination: React.FC<PaginationProps> = ({
       {totalPages <= 10 ? (
         createPageNumbers().map((page) => (
           <button
+            data-testid="pagination"
             key={page}
             className={
               page === currentPage
@@ -48,6 +49,7 @@ const Pagination: React.FC<PaginationProps> = ({
             .slice(0, 3)
             .map((page) => (
               <button
+                data-testid="pagination"
                 key={page}
                 className={
                   page === currentPage
@@ -81,6 +83,7 @@ const Pagination: React.FC<PaginationProps> = ({
                     : styles.pageButton
                 }
                 onClick={() => onPageChange(page)}
+                data-testid="pagination"
               >
                 {page}
               </button>

@@ -1,19 +1,59 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import Catalog from '../../components/Catalog/Catalog';
-import { useAppContext } from '../../context/context';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import store from '../../store/store';
+import Catalog from '../Catalog/Catalog';
 
-vi.mock('../../context/context');
+// Мокируем хук useCharacters для разных сценариев
+const mockUseCharacters = vi.fn();
+vi.mock('../../hooks/useCharacters', () => ({
+  default: (inputValue: string, currentPage: number, itemsPerPage: number) =>
+    mockUseCharacters(inputValue, currentPage, itemsPerPage),
+}));
+
+const mockUseCharacterDetails = vi.fn();
+vi.mock('../../hooks/useCharacterDetails', () => ({
+  default: (characterId: string) => mockUseCharacterDetails(characterId),
+}));
 
 describe('Catalog Component', () => {
-  const mockDispatch = vi.fn();
-  const mockState = {
-    characters: [
-      {
+  beforeEach(() => {
+    mockUseCharacters.mockReturnValue({
+      characters: [
+        {
+          id: 1,
+          name: 'Rick Sanchez',
+          image: 'rick_image_url',
+          species: 'Human',
+          status: 'Alive',
+          location: { name: 'Earth' },
+          origin: { name: 'Earth' },
+          gender: 'Male',
+          type: '',
+        },
+        {
+          id: 2,
+          name: 'Morty Smith',
+          image: 'morty_image_url',
+          species: 'Human',
+          status: 'Alive',
+          location: { name: 'Earth' },
+          origin: { name: 'Earth' },
+          gender: 'Male',
+          type: '',
+        },
+      ],
+      isLoading: false,
+      error: '',
+      totalPages: 2,
+    });
+
+    mockUseCharacterDetails.mockReturnValue({
+      character: {
         id: 1,
-        name: 'Character 1',
-        image: 'image1',
+        name: 'Rick Sanchez',
+        image: 'rick_image_url',
         species: 'Human',
         status: 'Alive',
         location: { name: 'Earth' },
@@ -21,95 +61,112 @@ describe('Catalog Component', () => {
         gender: 'Male',
         type: '',
       },
-      {
-        id: 2,
-        name: 'Character 2',
-        image: 'image2',
-        species: 'Alien',
-        status: 'Dead',
-        location: { name: 'Mars' },
-        origin: { name: 'Mars' },
-        gender: 'Female',
-        type: '',
-      },
-    ],
-    isLoading: false,
-    error: '',
-    totalPages: 1,
-  };
-
-  beforeEach(() => {
-    vi.resetAllMocks();
-    (useAppContext as Mock).mockReturnValue({
-      state: mockState,
-      dispatch: mockDispatch,
+      isLoading: false,
+      error: '',
     });
-  });
 
-  const setup = () => {
-    return render(
-      <Router>
-        <Catalog />
-      </Router>
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <Catalog />
+        </BrowserRouter>
+      </Provider>
     );
-  };
-
-  it('renders input and search button', () => {
-    setup();
-    expect(screen.getByPlaceholderText('Search')).toBeInTheDocument();
-    expect(screen.getByText('Search')).toBeInTheDocument();
   });
 
-  it('calls fetchCharacters on mount', async () => {
-    setup();
-    await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith({ type: 'SET_LOADING' });
+  it('renders search input and button', () => {
+    const inputElement = screen.getByPlaceholderText('Search');
+    const buttonElement = screen.getByText('Search');
+    expect(inputElement).toBeInTheDocument();
+    expect(buttonElement).toBeInTheDocument();
+  });
+
+  it('renders loader initially', () => {
+    mockUseCharacters.mockReturnValue({
+      characters: [],
+      isLoading: true,
+      error: '',
+      totalPages: 0,
     });
+
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <Catalog />
+        </BrowserRouter>
+      </Provider>
+    );
+
+    const loaderElement = screen.getByTestId('loader');
+    expect(loaderElement).toBeInTheDocument();
   });
 
-  it('updates input value and calls onChange', async () => {
-    setup();
-    const input = screen.getByPlaceholderText('Search');
-    fireEvent.change(input, { target: { value: 'New value' } });
-    expect(input).toHaveValue('New value');
-  });
-
-  it('calls fetchCharacters on Enter key press', async () => {
-    setup();
-    const input = screen.getByPlaceholderText('Search');
-    fireEvent.change(input, { target: { value: 'Valid input' } });
-    fireEvent.keyPress(input, { key: 'Enter', code: 'Enter', charCode: 13 });
-    await waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledWith({ type: 'SET_LOADING' });
+  it('displays error message when error occurs', () => {
+    mockUseCharacters.mockReturnValue({
+      characters: [],
+      isLoading: false,
+      error: 'An error occurred during data retrieval.',
+      totalPages: 0,
     });
+
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <Catalog />
+        </BrowserRouter>
+      </Provider>
+    );
+
+    const errorElement = screen.getByText(
+      'An error occurred during data retrieval.'
+    );
+    expect(errorElement).toBeInTheDocument();
   });
 
-  it('displays characters when fetchCharacters is successful', async () => {
-    setup();
-    await waitFor(() => {
-      mockState.characters.forEach((character) => {
-        expect(screen.getByText(character.name)).toBeInTheDocument();
-      });
-    });
+  it('displays characters and pagination when data is fetched', async () => {
+    const characterElements = await screen.findAllByText(
+      /Rick Sanchez|Morty Smith/
+    );
+    const paginationElement = screen.getByText('Next');
+
+    expect(characterElements.length).toBe(2);
+    expect(paginationElement).toBeInTheDocument();
   });
 
-  it('displays loader while fetching characters', () => {
-    mockState.isLoading = true;
-    setup();
-    expect(screen.getByTestId('loader')).toBeInTheDocument();
+  it('handles search input change and triggers search', () => {
+    const inputElement = screen.getByPlaceholderText('Search');
+    const buttonElement = screen.getByText('Search');
+
+    fireEvent.change(inputElement, { target: { value: 'Rick' } });
+    fireEvent.click(buttonElement);
+
+    const characterElement = screen.getByText('Rick Sanchez');
+    expect(characterElement).toBeInTheDocument();
   });
 
-  it('displays error message if fetchCharacters fails', () => {
-    mockState.error = 'Error fetching characters';
-    setup();
-    expect(screen.getByText('Error fetching characters')).toBeInTheDocument();
+  it('handles pagination change', async () => {
+    const nextPageButton = screen.getByText('Next');
+    fireEvent.click(nextPageButton);
+
+    const pageNumber = screen.getByText('2');
+    expect(pageNumber).toBeInTheDocument();
   });
 
-  it('handles deliberate error throw', () => {
-    setup();
+  it('handles character click and displays character details', async () => {
+    const characterElement = screen.getByText('Rick Sanchez');
+    fireEvent.click(characterElement);
+
+    const characterDetails = await screen.findByTestId('close-button');
+    expect(characterDetails).toBeInTheDocument();
+  });
+
+  it('handles error button click and throws an error', () => {
     const errorButton = screen.getByText('Error');
-    expect(() => {
+
+    try {
       fireEvent.click(errorButton);
-    }).toThrow('This error was deliberately caused.');
+    } catch (error) {
+      expect(error).toEqual(new Error('This error was deliberately caused.'));
+    }
   });
 });

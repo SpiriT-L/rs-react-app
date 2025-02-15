@@ -28,7 +28,11 @@ const CharacterDetails: FC<CharacterDetailsProps> = ({
       ) : (
         isCharacter(character) && (
           <div className={style.detailCard}>
-            <button className={style.closeButton} onClick={handleCloseClick}>
+            <button
+              className={style.closeButton}
+              onClick={handleCloseClick}
+              data-testid="close-button"
+            >
               Close
             </button>
             <Card

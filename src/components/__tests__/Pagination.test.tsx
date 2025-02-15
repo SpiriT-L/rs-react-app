@@ -18,14 +18,8 @@ describe('Pagination Component', () => {
   it('renders correct number of page buttons', () => {
     setup(5, 1);
     const pageButtons = screen.getAllByRole('button');
-    expect(pageButtons).toHaveLength(7); // 5 page buttons + 2 navigation buttons (Previous, Next)
+    expect(pageButtons).toHaveLength(7);
   });
-
-  // it('disables the current page button', () => {
-  //   setup(5, 3);
-  //   const currentPageButton = screen.getByText('3');
-  //   expect(currentPageButton).toBeDisabled();
-  // });
 
   it('calls onPageChange with correct page number on button click', () => {
     const { onPageChange } = setup(5, 1);

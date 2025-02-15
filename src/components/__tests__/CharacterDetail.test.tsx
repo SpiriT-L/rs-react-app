@@ -19,7 +19,6 @@ const mockCharacterDetails = {
   error: null,
 };
 
-// Mocking the hook manually
 vi.mock('../../hooks/useCharacterDetails');
 
 const mockedUseCharacterDetails = useCharacterDetails as jest.Mock;
