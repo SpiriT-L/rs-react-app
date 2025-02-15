@@ -1,40 +1,37 @@
-import { useCallback, useState } from 'react';
+import { useEffect } from 'react';
 import { getCharacters } from '../api/getCharacters';
-import { Character } from '../types/Interface';
+import { useAppContext } from '../context/context';
 
-const useCharacters = () => {
-  const [characters, setCharacters] = useState<Character[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [totalPages, setTotalPages] = useState(0);
+const useCharacters = (
+  inputValue: string,
+  page: number,
+  itemsPerPage: number
+) => {
+  const { dispatch } = useAppContext();
 
-  const fetchCharacters = useCallback(
-    async (inputValue: string, page: number, itemsPerPage: number) => {
-      setIsLoading(true);
+  useEffect(() => {
+    const fetchCharacters = async () => {
+      dispatch({ type: 'SET_LOADING' });
       try {
         const { results, totalPages } = await getCharacters(
           inputValue,
           page,
           itemsPerPage
         );
-        setTimeout(() => {
-          setTotalPages(totalPages);
-          setCharacters(results);
-          setError('');
-          setIsLoading(false);
-        }, 1000);
-      } catch (err) {
-        console.error('Error fetching characters:', err);
-        setCharacters([]);
-        setTotalPages(0);
-        setError('An error occurred during data retrieval.');
-        setIsLoading(false);
+        dispatch({
+          type: 'SET_CHARACTERS',
+          payload: { characters: results, totalPages },
+        });
+      } catch {
+        dispatch({
+          type: 'SET_ERROR',
+          payload: 'An error occurred during data retrieval.',
+        });
       }
-    },
-    []
-  );
+    };
 
-  return { characters, isLoading, error, fetchCharacters, totalPages };
+    fetchCharacters();
+  }, [inputValue, page, itemsPerPage, dispatch]);
 };
 
 export default useCharacters;

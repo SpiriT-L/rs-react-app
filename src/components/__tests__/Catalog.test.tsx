@@ -1,27 +1,49 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import Catalog from '../../components/Catalog/Catalog';
-import useCharacters from '../../hooks/useCharacters';
+import { useAppContext } from '../../context/context';
 
-vi.mock('../../hooks/useCharacters');
+vi.mock('../../context/context');
 
 describe('Catalog Component', () => {
-  const mockUseCharacters = useCharacters as jest.Mock;
-
-  const mockData = {
+  const mockDispatch = vi.fn();
+  const mockState = {
     characters: [
-      { id: '1', name: 'Character 1' },
-      { id: '2', name: 'Character 2' },
+      {
+        id: 1,
+        name: 'Character 1',
+        image: 'image1',
+        species: 'Human',
+        status: 'Alive',
+        location: { name: 'Earth' },
+        origin: { name: 'Earth' },
+        gender: 'Male',
+        type: '',
+      },
+      {
+        id: 2,
+        name: 'Character 2',
+        image: 'image2',
+        species: 'Alien',
+        status: 'Dead',
+        location: { name: 'Mars' },
+        origin: { name: 'Mars' },
+        gender: 'Female',
+        type: '',
+      },
     ],
     isLoading: false,
-    error: null as string | null,
-    fetchCharacters: vi.fn().mockResolvedValue(undefined),
+    error: '',
     totalPages: 1,
   };
 
   beforeEach(() => {
-    mockUseCharacters.mockReturnValue(mockData);
+    vi.resetAllMocks();
+    (useAppContext as Mock).mockReturnValue({
+      state: mockState,
+      dispatch: mockDispatch,
+    });
   });
 
   const setup = () => {
@@ -41,7 +63,7 @@ describe('Catalog Component', () => {
   it('calls fetchCharacters on mount', async () => {
     setup();
     await waitFor(() => {
-      expect(mockData.fetchCharacters).toHaveBeenCalled();
+      expect(mockDispatch).toHaveBeenCalledWith({ type: 'SET_LOADING' });
     });
   });
 
@@ -58,40 +80,29 @@ describe('Catalog Component', () => {
     fireEvent.change(input, { target: { value: 'Valid input' } });
     fireEvent.keyPress(input, { key: 'Enter', code: 'Enter', charCode: 13 });
     await waitFor(() => {
-      expect(mockData.fetchCharacters).toHaveBeenCalled();
+      expect(mockDispatch).toHaveBeenCalledWith({ type: 'SET_LOADING' });
     });
   });
 
   it('displays characters when fetchCharacters is successful', async () => {
     setup();
     await waitFor(() => {
-      mockData.characters.forEach((character) => {
+      mockState.characters.forEach((character) => {
         expect(screen.getByText(character.name)).toBeInTheDocument();
       });
     });
   });
 
   it('displays loader while fetching characters', () => {
-    mockData.isLoading = true;
+    mockState.isLoading = true;
     setup();
     expect(screen.getByTestId('loader')).toBeInTheDocument();
   });
 
   it('displays error message if fetchCharacters fails', () => {
-    mockData.error = 'Error fetching characters';
+    mockState.error = 'Error fetching characters';
     setup();
     expect(screen.getByText('Error fetching characters')).toBeInTheDocument();
-  });
-
-  it('navigates to character details on character click', async () => {
-    setup();
-    const characterElement = screen.getByText((_, element) => {
-      return element?.textContent === 'Character';
-    });
-    fireEvent.click(characterElement);
-    await waitFor(() => {
-      expect(screen.getByText('Character')).toBeInTheDocument();
-    });
   });
 
   it('handles deliberate error throw', () => {

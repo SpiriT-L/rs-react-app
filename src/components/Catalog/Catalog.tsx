@@ -1,6 +1,7 @@
-import { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import useCharacters from '../../hooks/useCharacters';
+import { getCharacters } from '../../api/getCharacters';
+import { useAppContext } from '../../context/context';
 import useSearchQuery from '../../hooks/useSearchQuery';
 import Button from '../Button/Button';
 import CardList from '../CardList/CardList';
@@ -13,21 +14,40 @@ import style from './Catalog.module.scss';
 
 const ITEMS_PER_PAGE = 10;
 
-const Catalog: FC = () => {
+const Catalog: React.FC = () => {
+  const { state, dispatch } = useAppContext();
+  const { characters, isLoading, error, totalPages } = state;
   const [inputValue, setInputValue] = useSearchQuery('searchQuery');
-  const { characters, isLoading, error, fetchCharacters, totalPages } =
-    useCharacters();
   const [throwError, setThrowError] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const selectedCharacterId = searchParams.get('details');
 
-  useEffect(() => {
-    fetchCharacters(inputValue, currentPage, ITEMS_PER_PAGE).then(() => {
+  const fetchCharacters = async () => {
+    dispatch({ type: 'SET_LOADING' });
+    try {
+      const { results, totalPages } = await getCharacters(
+        inputValue,
+        currentPage,
+        ITEMS_PER_PAGE
+      );
+      dispatch({
+        type: 'SET_CHARACTERS',
+        payload: { characters: results, totalPages },
+      });
       setShowResults(true);
-    });
-  }, [inputValue, currentPage, fetchCharacters]);
+    } catch {
+      dispatch({
+        type: 'SET_ERROR',
+        payload: 'An error occurred during data retrieval.',
+      });
+    }
+  };
+
+  useEffect(() => {
+    fetchCharacters();
+  }, [inputValue, currentPage, dispatch]);
 
   const handleInputChange = (value: string) => {
     setInputValue(value);
@@ -38,17 +58,13 @@ const Catalog: FC = () => {
   const handleEnterPress = (valid: boolean) => {
     if (valid) {
       setShowResults(false);
-      fetchCharacters(inputValue, currentPage, ITEMS_PER_PAGE).then(() => {
-        setShowResults(true);
-      });
+      fetchCharacters();
     }
   };
 
   const handleButtonClick = () => {
     setShowResults(false);
-    fetchCharacters(inputValue, currentPage, ITEMS_PER_PAGE).then(() => {
-      setShowResults(true);
-    });
+    fetchCharacters();
   };
 
   const handleThrowError = () => {
