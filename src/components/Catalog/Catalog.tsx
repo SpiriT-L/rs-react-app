@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getCharacters } from '../../api/getCharacters';
 import { useAppContext } from '../../context/context';
 import useSearchQuery from '../../hooks/useSearchQuery';
+import useCharacters from '../../hooks/useCharacters';
 import Button from '../Button/Button';
 import CardList from '../CardList/CardList';
 import CharacterDetails from '../CharacterDetails/CharacterDetails';
@@ -15,7 +15,7 @@ import style from './Catalog.module.scss';
 const ITEMS_PER_PAGE = 10;
 
 const Catalog: React.FC = () => {
-  const { state, dispatch } = useAppContext();
+  const { state } = useAppContext();
   const { characters, isLoading, error, totalPages } = state;
   const [inputValue, setInputValue] = useSearchQuery('searchQuery');
   const [throwError, setThrowError] = useState(false);
@@ -24,30 +24,11 @@ const Catalog: React.FC = () => {
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const selectedCharacterId = searchParams.get('details');
 
-  const fetchCharacters = async () => {
-    dispatch({ type: 'SET_LOADING' });
-    try {
-      const { results, totalPages } = await getCharacters(
-        inputValue,
-        currentPage,
-        ITEMS_PER_PAGE
-      );
-      dispatch({
-        type: 'SET_CHARACTERS',
-        payload: { characters: results, totalPages },
-      });
-      setShowResults(true);
-    } catch {
-      dispatch({
-        type: 'SET_ERROR',
-        payload: 'An error occurred during data retrieval.',
-      });
-    }
-  };
+  useCharacters(inputValue, currentPage, ITEMS_PER_PAGE);
 
   useEffect(() => {
-    fetchCharacters();
-  }, [inputValue, currentPage, dispatch]);
+    setShowResults(true);
+  }, [state.characters]);
 
   const handleInputChange = (value: string) => {
     setInputValue(value);
@@ -58,13 +39,13 @@ const Catalog: React.FC = () => {
   const handleEnterPress = (valid: boolean) => {
     if (valid) {
       setShowResults(false);
-      fetchCharacters();
+      setShowResults(true);
     }
   };
 
   const handleButtonClick = () => {
     setShowResults(false);
-    fetchCharacters();
+    setShowResults(true);
   };
 
   const handleThrowError = () => {
