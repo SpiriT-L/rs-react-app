@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import useCharacters from '../../hooks/useCharacters';
-import useSearchQuery from '../../hooks/useSearchQuery';
+import { useGetCharactersQuery } from '../../services/api';
 import Button from '../Button/Button';
 import CardList from '../CardList/CardList';
 import CharacterDetails from '../CharacterDetails/CharacterDetails';
 import ErrorButton from '../ErrorButton/ErrorButton';
+import ErrorDisplay from '../ErrorDisplay/ErrorDisplay';
 import Input from '../Input/Input';
 import Loader from '../Loader/Loader';
 import Pagination from '../Pagination/Pagination';
@@ -14,39 +14,34 @@ import style from './Catalog.module.scss';
 const ITEMS_PER_PAGE = 10;
 
 const Catalog: React.FC = () => {
-  const [inputValue, setInputValue] = useSearchQuery('searchQuery');
+  const [inputValue, setInputValue] = useState('');
   const [throwError, setThrowError] = useState(false);
-  const [showResults, setShowResults] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const selectedCharacterId = searchParams.get('details');
 
-  const { characters, isLoading, error, totalPages } = useCharacters(
-    inputValue,
-    currentPage,
-    ITEMS_PER_PAGE
-  );
+  const { data, error, isLoading } = useGetCharactersQuery({
+    name: inputValue,
+    page: currentPage,
+    itemsPerPage: ITEMS_PER_PAGE,
+  });
 
-  useEffect(() => {
-    setShowResults(true);
-  }, [characters]);
+  const characters = useMemo(() => data?.results || [], [data]);
+  const totalPages = data?.info?.pages || 0;
 
   const handleInputChange = (value: string) => {
     setInputValue(value);
     setSearchParams({ page: '1' });
-    setShowResults(false);
   };
 
   const handleEnterPress = (valid: boolean) => {
     if (valid) {
-      setShowResults(false);
-      setShowResults(true);
+      setSearchParams({ page: '1' });
     }
   };
 
   const handleButtonClick = () => {
-    setShowResults(false);
-    setShowResults(true);
+    setSearchParams({ page: '1' });
   };
 
   const handleThrowError = () => {
@@ -88,14 +83,14 @@ const Catalog: React.FC = () => {
             />
             <Button onClick={handleButtonClick}>Search</Button>
           </div>
-          {error && <div className={style.error}>{error}</div>}
+          {error && <ErrorDisplay error={error} />}
         </div>
       </section>
       <hr className={style.hr} />
       <div className={style.content}>
         <section className={style.leftSection} onClick={handleLeftSectionClick}>
           <h2 className={style.title}>Character</h2>
-          {isLoading || !showResults || error ? (
+          {isLoading ? (
             <Loader />
           ) : (
             <>

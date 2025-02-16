@@ -1,57 +1,110 @@
 import { fireEvent, render, screen } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import useCharacterDetails from '../../hooks/useCharacterDetails';
+import store from '../../store/store';
 import CharacterDetails from '../CharacterDetails/CharacterDetails';
 
-const mockCharacterDetails = {
-  character: {
-    id: 1,
-    name: 'Rick Sanchez',
-    image: 'https://example.com/rick.png',
-    status: 'Alive',
-    species: 'Human',
-    type: '',
-    gender: 'Male',
-    location: { name: 'Earth' },
-    origin: { name: 'Earth' },
-  },
-  isLoading: false,
-  error: null,
-};
+vi.mock('../../services/api', async () => {
+  const actual =
+    await vi.importActual<typeof import('../../services/api')>(
+      '../../services/api'
+    );
+  return {
+    ...actual,
+    useGetCharacterByIdQuery: vi.fn(),
+  };
+});
 
-vi.mock('../../hooks/useCharacterDetails');
-
-const mockedUseCharacterDetails = useCharacterDetails as jest.Mock;
+import { useGetCharacterByIdQuery } from '../../services/api';
 
 describe('CharacterDetails Component', () => {
+  const characterId = '1';
+  const mockOnClose = vi.fn();
+
   beforeEach(() => {
-    mockedUseCharacterDetails.mockReturnValue(mockCharacterDetails);
+    (useGetCharacterByIdQuery as jest.Mock).mockReturnValue({
+      data: {
+        id: 1,
+        name: 'Rick Sanchez',
+        image: 'rick_image_url',
+        species: 'Human',
+        status: 'Alive',
+        location: { name: 'Earth' },
+        origin: { name: 'Earth' },
+        gender: 'Male',
+        type: '',
+      },
+      isLoading: false,
+      error: null,
+      refetch: vi.fn(),
+    });
+
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <CharacterDetails characterId={characterId} onClose={mockOnClose} />
+        </BrowserRouter>
+      </Provider>
+    );
   });
 
-  it('fetches detailed information on component render', async () => {
-    render(<CharacterDetails characterId="1" onClose={() => {}} />);
-
-    expect(screen.getByText('Rick Sanchez')).toBeInTheDocument();
-    expect(mockedUseCharacterDetails).toHaveBeenCalledWith('1');
+  it('fetches detailed information on component render', () => {
+    const characterName = screen.getByText('Rick Sanchez');
+    expect(characterName).toBeInTheDocument();
   });
 
   it('displays loading indicator while fetching data', () => {
-    mockedUseCharacterDetails.mockReturnValue({
-      ...mockCharacterDetails,
+    (useGetCharacterByIdQuery as jest.Mock).mockReturnValueOnce({
+      data: null,
       isLoading: true,
+      error: null,
+      refetch: vi.fn(),
     });
 
-    render(<CharacterDetails characterId="1" onClose={() => {}} />);
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <CharacterDetails characterId={characterId} onClose={mockOnClose} />
+        </BrowserRouter>
+      </Provider>
+    );
 
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    const loaderElements = screen.getAllByTestId('loader');
+    expect(loaderElements.length).toBe(1);
+    expect(loaderElements[0]).toBeInTheDocument();
+  });
+
+  it('displays error message when error occurs', () => {
+    (useGetCharacterByIdQuery as jest.Mock).mockReturnValueOnce({
+      data: null,
+      isLoading: false,
+      error: { status: 500, data: 'An error occurred during data retrieval.' },
+      refetch: vi.fn(),
+    });
+
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <CharacterDetails characterId={characterId} onClose={mockOnClose} />
+        </BrowserRouter>
+      </Provider>
+    );
+
+    const errorElement = screen.getByText((content, element) => {
+      return (
+        element !== null &&
+        element.tagName.toLowerCase() === 'p' &&
+        content.includes('An error occurred during data retrieval.')
+      );
+    });
+    expect(errorElement).toBeInTheDocument();
   });
 
   it('hides the component when the close button is clicked', () => {
-    const handleClose = vi.fn();
+    const closeButton = screen.getByTestId('close-button');
+    fireEvent.click(closeButton);
 
-    render(<CharacterDetails characterId="1" onClose={handleClose} />);
-
-    fireEvent.click(screen.getByText('Close'));
-    expect(handleClose).toHaveBeenCalledTimes(1);
+    expect(mockOnClose).toHaveBeenCalled();
   });
 });
