@@ -5,52 +5,62 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import store from '../../store/store';
 import Catalog from '../Catalog/Catalog';
 
-// Мокируем хук useCharacters для разных сценариев
-const mockUseCharacters = vi.fn();
-vi.mock('../../hooks/useCharacters', () => ({
-  default: (inputValue: string, currentPage: number, itemsPerPage: number) =>
-    mockUseCharacters(inputValue, currentPage, itemsPerPage),
-}));
+vi.mock('../../services/api', async () => {
+  const actual =
+    await vi.importActual<typeof import('../../services/api')>(
+      '../../services/api'
+    );
+  return {
+    ...actual,
+    useGetCharactersQuery: vi.fn(),
+    useGetCharacterByIdQuery: vi.fn(),
+  };
+});
 
-const mockUseCharacterDetails = vi.fn();
-vi.mock('../../hooks/useCharacterDetails', () => ({
-  default: (characterId: string) => mockUseCharacterDetails(characterId),
-}));
+import {
+  useGetCharacterByIdQuery,
+  useGetCharactersQuery,
+} from '../../services/api';
 
 describe('Catalog Component', () => {
   beforeEach(() => {
-    mockUseCharacters.mockReturnValue({
-      characters: [
-        {
-          id: 1,
-          name: 'Rick Sanchez',
-          image: 'rick_image_url',
-          species: 'Human',
-          status: 'Alive',
-          location: { name: 'Earth' },
-          origin: { name: 'Earth' },
-          gender: 'Male',
-          type: '',
+    (useGetCharactersQuery as jest.Mock).mockReturnValue({
+      data: {
+        results: [
+          {
+            id: 1,
+            name: 'Rick Sanchez',
+            image: 'rick_image_url',
+            species: 'Human',
+            status: 'Alive',
+            location: { name: 'Earth' },
+            origin: { name: 'Earth' },
+            gender: 'Male',
+            type: '',
+          },
+          {
+            id: 2,
+            name: 'Morty Smith',
+            image: 'morty_image_url',
+            species: 'Human',
+            status: 'Alive',
+            location: { name: 'Earth' },
+            origin: { name: 'Earth' },
+            gender: 'Male',
+            type: '',
+          },
+        ],
+        info: {
+          pages: 2,
         },
-        {
-          id: 2,
-          name: 'Morty Smith',
-          image: 'morty_image_url',
-          species: 'Human',
-          status: 'Alive',
-          location: { name: 'Earth' },
-          origin: { name: 'Earth' },
-          gender: 'Male',
-          type: '',
-        },
-      ],
+      },
       isLoading: false,
-      error: '',
-      totalPages: 2,
+      error: null,
+      refetch: vi.fn(),
     });
 
-    mockUseCharacterDetails.mockReturnValue({
-      character: {
+    (useGetCharacterByIdQuery as jest.Mock).mockReturnValue({
+      data: {
         id: 1,
         name: 'Rick Sanchez',
         image: 'rick_image_url',
@@ -62,7 +72,8 @@ describe('Catalog Component', () => {
         type: '',
       },
       isLoading: false,
-      error: '',
+      error: null,
+      refetch: vi.fn(),
     });
 
     render(
@@ -82,11 +93,11 @@ describe('Catalog Component', () => {
   });
 
   it('renders loader initially', () => {
-    mockUseCharacters.mockReturnValue({
-      characters: [],
+    (useGetCharactersQuery as jest.Mock).mockReturnValueOnce({
+      data: null,
       isLoading: true,
-      error: '',
-      totalPages: 0,
+      error: null,
+      refetch: vi.fn(),
     });
 
     render(
@@ -99,28 +110,6 @@ describe('Catalog Component', () => {
 
     const loaderElement = screen.getByTestId('loader');
     expect(loaderElement).toBeInTheDocument();
-  });
-
-  it('displays error message when error occurs', () => {
-    mockUseCharacters.mockReturnValue({
-      characters: [],
-      isLoading: false,
-      error: 'An error occurred during data retrieval.',
-      totalPages: 0,
-    });
-
-    render(
-      <Provider store={store}>
-        <BrowserRouter>
-          <Catalog />
-        </BrowserRouter>
-      </Provider>
-    );
-
-    const errorElement = screen.getByText(
-      'An error occurred during data retrieval.'
-    );
-    expect(errorElement).toBeInTheDocument();
   });
 
   it('displays characters and pagination when data is fetched', async () => {

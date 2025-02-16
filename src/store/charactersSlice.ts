@@ -1,17 +1,28 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Character } from '../types/Interface';
+
+interface Character {
+  id: number;
+  name: string;
+  image: string;
+  species: string;
+  status: string;
+  location: { name: string };
+  origin: { name: string };
+  gender: string;
+  type: string;
+}
 
 interface CharactersState {
   characters: Character[];
   isLoading: boolean;
-  error: string;
+  error: string | null;
   totalPages: number;
 }
 
 const initialState: CharactersState = {
   characters: [],
   isLoading: false,
-  error: '',
+  error: null,
   totalPages: 0,
 };
 
@@ -19,25 +30,24 @@ const charactersSlice = createSlice({
   name: 'characters',
   initialState,
   reducers: {
-    setCharacters: (
+    setCharacters(
       state,
       action: PayloadAction<{ characters: Character[]; totalPages: number }>
-    ) => {
+    ) {
       state.characters = action.payload.characters;
       state.totalPages = action.payload.totalPages;
       state.isLoading = false;
-      state.error = '';
+      state.error = null;
     },
-    setLoading: (state) => {
+    setLoading(state) {
       state.isLoading = true;
     },
-    setError: (state, action: PayloadAction<string>) => {
-      state.error = action.payload;
+    setError(state, action: PayloadAction<string>) {
       state.isLoading = false;
+      state.error = action.payload;
     },
   },
 });
 
 export const { setCharacters, setLoading, setError } = charactersSlice.actions;
-
 export default charactersSlice.reducer;
