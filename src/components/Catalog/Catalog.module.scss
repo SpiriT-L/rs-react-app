@@ -47,9 +47,9 @@
   flex: 1;
   border-left: 1px solid #f3f2f2;
   padding-left: 1rem;
-  display: none; /* Скрыть секцию по умолчанию */
+  display: none;
 }
 
 .rightSection.active {
-  display: block; /* Показать секцию, когда она активна */
+  display: block;
 }
