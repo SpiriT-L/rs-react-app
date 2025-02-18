@@ -1,7 +1,22 @@
+import { configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, screen } from '@testing-library/react';
+import { Provider } from 'react-redux';
 import { describe, expect, it, vi } from 'vitest';
+import selectedItemsReducer from '../../store/selectedItemsSlice';
 import { Character } from '../../types/Interface';
 import CardList from '../CardList/CardList';
+
+// Создаем mock store
+const store = configureStore({
+  reducer: {
+    selectedItems: selectedItemsReducer,
+  },
+  preloadedState: {
+    selectedItems: {
+      selectedItems: [],
+    },
+  },
+});
 
 const mockCharacters: Character[] = [
   {
@@ -31,14 +46,20 @@ const mockCharacters: Character[] = [
 describe('CardList component', () => {
   it('renders the specified number of cards', () => {
     render(
-      <CardList characters={mockCharacters} onCharacterClick={() => {}} />
+      <Provider store={store}>
+        <CardList characters={mockCharacters} onCharacterClick={() => {}} />
+      </Provider>
     );
     const cards = screen.getAllByRole('listitem');
     expect(cards).toHaveLength(mockCharacters.length);
   });
 
   it('displays an appropriate message if no cards are present', () => {
-    render(<CardList characters={[]} onCharacterClick={() => {}} />);
+    render(
+      <Provider store={store}>
+        <CardList characters={[]} onCharacterClick={() => {}} />
+      </Provider>
+    );
     const message = screen.getByText(/no characters available/i);
     expect(message).toBeInTheDocument();
   });
@@ -46,10 +67,12 @@ describe('CardList component', () => {
   it('calls onCharacterClick when a card is clicked', () => {
     const handleCharacterClick = vi.fn();
     render(
-      <CardList
-        characters={mockCharacters}
-        onCharacterClick={handleCharacterClick}
-      />
+      <Provider store={store}>
+        <CardList
+          characters={mockCharacters}
+          onCharacterClick={handleCharacterClick}
+        />
+      </Provider>
     );
     const card = screen.getByText(/Rick Sanchez/i);
     fireEvent.click(card);
@@ -58,7 +81,9 @@ describe('CardList component', () => {
 
   it('renders the correct character names and images', () => {
     render(
-      <CardList characters={mockCharacters} onCharacterClick={() => {}} />
+      <Provider store={store}>
+        <CardList characters={mockCharacters} onCharacterClick={() => {}} />
+      </Provider>
     );
     mockCharacters.forEach((character) => {
       const nameElement = screen.getByText(character.name);
