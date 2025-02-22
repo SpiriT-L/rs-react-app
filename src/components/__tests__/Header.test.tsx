@@ -1,28 +1,36 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import React from 'react';
+import { Provider } from 'react-redux';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { describe, expect, it } from 'vitest';
+import store from '../../store/store';
 import Header from '../Header/Header';
 
-const renderWithRouter = (component: React.ReactElement) => {
-  return render(<BrowserRouter>{component}</BrowserRouter>);
+const renderWithProviders = (ui: React.ReactElement) => {
+  return render(
+    <Provider store={store}>
+      <Router>{ui}</Router>
+    </Provider>
+  );
 };
 
 describe('Header', () => {
-  test('renders the title with a link to the homepage', () => {
-    renderWithRouter(<Header />);
+  it('renders the title with a link to the homepage', () => {
+    renderWithProviders(<Header />);
     const titleLink = screen.getByText(/Rick & Morty/i);
     expect(titleLink).toBeInTheDocument();
     expect(titleLink.getAttribute('href')).toBe('/');
   });
 
   test('renders the Home link', () => {
-    renderWithRouter(<Header />);
+    renderWithProviders(<Header />);
     const homeLink = screen.getByText(/Home/i);
     expect(homeLink).toBeInTheDocument();
     expect(homeLink.getAttribute('href')).toBe('/');
   });
 
   test('toggles the burger menu when clicked', () => {
-    renderWithRouter(<Header />);
+    renderWithProviders(<Header />);
     const burgerButton = screen.getByText(/☰/i);
     fireEvent.click(burgerButton);
     const overlay = screen.getByText(/✖/i);
@@ -32,11 +40,17 @@ describe('Header', () => {
   });
 
   test('closes the menu when clicking on the Home link', () => {
-    renderWithRouter(<Header />);
+    renderWithProviders(<Header />);
     const burgerButton = screen.getByText(/☰/i);
     fireEvent.click(burgerButton);
     const homeLink = screen.getByText(/Home/i);
     fireEvent.click(homeLink);
     expect(screen.queryByText(/✖/i)).not.toBeInTheDocument();
+  });
+
+  it('renders the ThemeSwitcher component', () => {
+    renderWithProviders(<Header />);
+    const themeSwitcher = screen.getByTestId('theme-switcher');
+    expect(themeSwitcher).toBeInTheDocument();
   });
 });

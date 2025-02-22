@@ -3,12 +3,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: relative;
+  width: 100%;
+z-index: 10;
 }
 
 .title {
   font-family: 'rickandmorty';
-  font-size: 2.5em;
+  font-size: 2.5rem;
   color: #00b1c8;
   text-decoration: none;
 }
@@ -16,6 +17,7 @@
 .nav {
   display: flex;
   gap: 1rem;
+  align-items: center;
 }
 
 .link {
@@ -45,7 +47,7 @@
   .nav {
     flex-direction: column;
     position: fixed;
-    top: 40px;
+    top: 0px;
     right: 0;
     width: 100%;
     height: 100%;
@@ -54,18 +56,16 @@
     transform: translateX(100%);
     transition: transform 0.3s ease-in-out;
     z-index: 5;
+    &.open {
+      transform: translateX(0);
+    }
   }
-
-  .nav.open {
-    transform: translateX(-0);
-  }
-
   .burger {
-    position: absolute;
     display: block;
     z-index: 6;
-    top: 0;
-    right: 0;
-    size: 10px;
   }
+}
+
+.darkMode {
+  color: #ccc;
 }

@@ -81,3 +81,7 @@ export interface PopupContextProps {
   showPopup: () => void;
   hidePopup: () => void;
 }
+
+export interface ThemeProviderProps {
+  children: React.ReactNode;
+}

@@ -4,18 +4,26 @@
   margin: 10px;
   padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 10px;
+  background-color: #fff;
   transition:
     box-shadow 0.3s,
     border-color 0.3s;
   cursor: pointer;
   &:hover {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-color: #bbb;
+    border-color: #45a049;
 
     .cardChec {
       opacity: 1;
     }
+  }
+}
+.dark {
+  background-color: #ccc;
+  &:hover {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    border-color: #45a049;
   }
 }
 
