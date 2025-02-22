@@ -40,7 +40,9 @@ const Card: React.FC<CardProps> = ({
         onChange={handleCheckboxChange}
         onClick={(e) => e.stopPropagation()}
       />
-      <h2 className={styles.title}>{name}</h2>
+      <h2 className={`${styles.title} ${isDarkMode ? styles.dark : ''}`}>
+        {name}
+      </h2>
       <img className={styles.img} src={image} alt={name} />
       {status && (
         <p>

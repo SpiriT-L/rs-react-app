@@ -10,6 +10,7 @@ body {
   font-family: 'rickandmorty';
   font-size: 1rem;
   text-decoration: none;
+  color: #333;
 }
 
 html {
@@ -31,7 +32,7 @@ footer {
 
 .light {
   background-color: #ffffff;
-  color: #333;
+  color: #000;
 }
 
 .dark {
