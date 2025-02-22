@@ -2,17 +2,16 @@ import { configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { describe, expect, it, vi } from 'vitest';
-import selectedItemsReducer from '../../store/selectedItemsSlice';
+import selectionReducer from '../../store/selectionSlice';
 import Card from '../Card/Card';
 
-// Создаем функцию для создания mock store
 const createMockStore = (preloadedState = {}) => {
   return configureStore({
     reducer: {
-      selectedItems: selectedItemsReducer,
+      selection: selectionReducer,
     },
     preloadedState: {
-      selectedItems: {
+      selection: {
         selectedItems: [],
       },
       ...preloadedState,
@@ -132,15 +131,12 @@ describe('Card Component', () => {
     expect(checkbox).not.toBeChecked();
 
     fireEvent.click(checkbox);
-    expect(store.getState().selectedItems.selectedItems).toContain(
-      character.name
-    );
+    expect(store.getState().selection.selectedItems).toContain(character.name);
   });
 
   it('keeps checkbox checked if character is selected', () => {
-    // Создаем новый mock store с заранее установленным состоянием
     const store = createMockStore({
-      selectedItems: {
+      selection: {
         selectedItems: [character.name],
       },
     });

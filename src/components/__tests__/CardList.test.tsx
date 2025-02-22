@@ -2,17 +2,17 @@ import { configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { describe, expect, it, vi } from 'vitest';
-import selectedItemsReducer from '../../store/selectedItemsSlice';
+import selectionReducer from '../../store/selectionSlice';
 import { Character } from '../../types/Interface';
 import CardList from '../CardList/CardList';
 
 // Создаем mock store
 const store = configureStore({
   reducer: {
-    selectedItems: selectedItemsReducer,
+    selection: selectionReducer,
   },
   preloadedState: {
-    selectedItems: {
+    selection: {
       selectedItems: [],
     },
   },

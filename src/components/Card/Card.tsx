@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { toggleItem } from '../../store/selectedItemsSlice';
+import { toggleSelectItem } from '../../store/selectionSlice';
 import { RootState } from '../../store/store';
 import { CardProps } from '../../types/Interface';
 import style from './Card.module.scss';
@@ -18,16 +18,16 @@ const Card: React.FC<CardProps> = ({
 }) => {
   const dispatch = useDispatch();
   const isSelected = useSelector((state: RootState) =>
-    state.selectedItems.selectedItems.includes(name)
+    state.selection.selectedItems.includes(name)
   );
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
-    dispatch(toggleItem(name));
+    dispatch(toggleSelectItem(name));
   };
 
   return (
-    <li className={style.card} onClick={onClick}>
+    <div onClick={onClick}>
       <input
         className={style.cardChec}
         type="checkbox"
@@ -67,7 +67,7 @@ const Card: React.FC<CardProps> = ({
           Origin: <span className={style.description}>{originName}</span>
         </p>
       )}
-    </li>
+    </div>
   );
 };
 

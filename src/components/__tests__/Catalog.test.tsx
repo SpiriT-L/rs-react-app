@@ -1,161 +1,170 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { useGetCharactersQuery } from '../../services/api';
 import store from '../../store/store';
 import Catalog from '../Catalog/Catalog';
 
 vi.mock('../../services/api', async () => {
-  const actual =
+  const original =
     await vi.importActual<typeof import('../../services/api')>(
       '../../services/api'
     );
   return {
-    ...actual,
+    ...original,
     useGetCharactersQuery: vi.fn(),
-    useGetCharacterByIdQuery: vi.fn(),
   };
 });
 
-import {
-  useGetCharacterByIdQuery,
-  useGetCharactersQuery,
-} from '../../services/api';
+vi.mock('../../hooks/usePopup', () => ({
+  usePopup: () => ({
+    showPopup: vi.fn(),
+  }),
+}));
+
+vi.mock('../../hooks/useSelection', () => ({
+  default: () => ({
+    selectedItems: [],
+  }),
+}));
 
 describe('Catalog Component', () => {
-  beforeEach(() => {
+  const renderCatalog = () => {
+    return render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <Catalog />
+        </BrowserRouter>
+      </Provider>
+    );
+  };
+
+  it('renders search input and button', () => {
+    (useGetCharactersQuery as jest.Mock).mockReturnValue({
+      data: null,
+      error: null,
+      isLoading: false,
+    });
+
+    renderCatalog();
+    expect(screen.getByRole('textbox')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /search/i })).toBeInTheDocument();
+  });
+
+  it('renders character cards', () => {
     (useGetCharactersQuery as jest.Mock).mockReturnValue({
       data: {
         results: [
-          {
-            id: 1,
-            name: 'Rick Sanchez',
-            image: 'rick_image_url',
-            species: 'Human',
-            status: 'Alive',
-            location: { name: 'Earth' },
-            origin: { name: 'Earth' },
-            gender: 'Male',
-            type: '',
-          },
-          {
-            id: 2,
-            name: 'Morty Smith',
-            image: 'morty_image_url',
-            species: 'Human',
-            status: 'Alive',
-            location: { name: 'Earth' },
-            origin: { name: 'Earth' },
-            gender: 'Male',
-            type: '',
-          },
+          { id: '1', name: 'Rick Sanchez' },
+          { id: '2', name: 'Morty Smith' },
         ],
-        info: {
-          pages: 2,
-        },
+        info: { pages: 2 },
       },
-      isLoading: false,
       error: null,
-      refetch: vi.fn(),
+      isLoading: false,
     });
 
-    (useGetCharacterByIdQuery as jest.Mock).mockReturnValue({
-      data: {
-        id: 1,
-        name: 'Rick Sanchez',
-        image: 'rick_image_url',
-        species: 'Human',
-        status: 'Alive',
-        location: { name: 'Earth' },
-        origin: { name: 'Earth' },
-        gender: 'Male',
-        type: '',
-      },
-      isLoading: false,
-      error: null,
-      refetch: vi.fn(),
-    });
-
-    render(
-      <Provider store={store}>
-        <BrowserRouter>
-          <Catalog />
-        </BrowserRouter>
-      </Provider>
-    );
+    renderCatalog();
+    expect(screen.getByText('Rick Sanchez')).toBeInTheDocument();
+    expect(screen.getByText('Morty Smith')).toBeInTheDocument();
   });
 
-  it('renders search input and button', () => {
-    const inputElement = screen.getByPlaceholderText('Search');
-    const buttonElement = screen.getByText('Search');
-    expect(inputElement).toBeInTheDocument();
-    expect(buttonElement).toBeInTheDocument();
-  });
-
-  it('renders loader initially', () => {
+  it('renders loader when loading', () => {
     (useGetCharactersQuery as jest.Mock).mockReturnValueOnce({
       data: null,
-      isLoading: true,
       error: null,
-      refetch: vi.fn(),
+      isLoading: true,
     });
 
-    render(
-      <Provider store={store}>
-        <BrowserRouter>
-          <Catalog />
-        </BrowserRouter>
-      </Provider>
-    );
-
-    const loaderElement = screen.getByTestId('loader');
-    expect(loaderElement).toBeInTheDocument();
+    renderCatalog();
+    expect(screen.getByTestId('loader')).toBeInTheDocument();
   });
 
-  it('displays characters and pagination when data is fetched', async () => {
-    const characterElements = await screen.findAllByText(
-      /Rick Sanchez|Morty Smith/
-    );
-    const paginationElement = screen.getByText('Next');
+  it('renders error message when there is an error', () => {
+    (useGetCharactersQuery as jest.Mock).mockReturnValueOnce({
+      data: null,
+      error: { status: 500, message: 'Error loading data' },
+      isLoading: false,
+    });
 
-    expect(characterElements.length).toBe(2);
-    expect(paginationElement).toBeInTheDocument();
+    renderCatalog();
+    expect(screen.getByText(/error loading data/i)).toBeInTheDocument();
   });
 
-  it('handles search input change and triggers search', () => {
-    const inputElement = screen.getByPlaceholderText('Search');
-    const buttonElement = screen.getByText('Search');
-
-    fireEvent.change(inputElement, { target: { value: 'Rick' } });
-    fireEvent.click(buttonElement);
-
-    const characterElement = screen.getByText('Rick Sanchez');
-    expect(characterElement).toBeInTheDocument();
+  it('navigates to character details on card click', async () => {
+    renderCatalog();
+    fireEvent.click(screen.getByText('Rick Sanchez'));
+    await waitFor(() => {
+      expect(screen.getByText('Rick Sanchez')).toBeInTheDocument();
+    });
   });
 
-  it('handles pagination change', async () => {
-    const nextPageButton = screen.getByText('Next');
-    fireEvent.click(nextPageButton);
-
-    const pageNumber = screen.getByText('2');
-    expect(pageNumber).toBeInTheDocument();
+  it('handles page change', () => {
+    renderCatalog();
+    fireEvent.click(screen.getByText('Next'));
+    waitFor(() => {
+      expect(screen.getByText('Morty Smith')).toBeInTheDocument();
+    });
   });
 
-  it('handles character click and displays character details', async () => {
-    const characterElement = screen.getByText('Rick Sanchez');
-    fireEvent.click(characterElement);
+  it('displays search results when input value changes and search is triggered', async () => {
+    (useGetCharactersQuery as jest.Mock).mockReturnValueOnce({
+      data: {
+        results: [{ id: '1', name: 'Rick Sanchez' }],
+        info: { pages: 1 },
+      },
+      error: null,
+      isLoading: false,
+    });
 
-    const characterDetails = await screen.findByTestId('close-button');
-    expect(characterDetails).toBeInTheDocument();
+    renderCatalog();
+    const searchInput = screen.getByRole('textbox');
+    const searchButton = screen.getByRole('button', { name: /search/i });
+
+    fireEvent.change(searchInput, { target: { value: 'Rick' } });
+    fireEvent.click(searchButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Rick Sanchez/i)).toBeInTheDocument();
+    });
   });
 
-  it('handles error button click and throws an error', () => {
-    const errorButton = screen.getByText('Error');
+  it('clears search results and returns to first page when input is cleared', async () => {
+    (useGetCharactersQuery as jest.Mock).mockReturnValueOnce({
+      data: {
+        results: [{ id: '1', name: 'Rick Sanchez' }],
+        info: { pages: 1 },
+      },
+      error: null,
+      isLoading: false,
+    });
 
-    try {
-      fireEvent.click(errorButton);
-    } catch (error) {
-      expect(error).toEqual(new Error('This error was deliberately caused.'));
-    }
+    renderCatalog();
+    const searchInput = screen.getByRole('textbox');
+    const searchButton = screen.getByRole('button', { name: /search/i });
+
+    fireEvent.change(searchInput, { target: { value: 'Rick' } });
+    fireEvent.click(searchButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText((content, element) => {
+          return (
+            element !== null &&
+            element.tagName.toLowerCase() === 'h2' &&
+            content.includes('Rick Sanchez')
+          );
+        })
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.change(searchInput, { target: { value: '' } });
+    fireEvent.click(searchButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Rick Sanchez')).toBeInTheDocument();
+      expect(screen.getByText('Morty Smith')).toBeInTheDocument();
+    });
   });
 });

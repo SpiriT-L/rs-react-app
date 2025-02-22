@@ -2,11 +2,13 @@ import { configureStore } from '@reduxjs/toolkit';
 import { api } from '../services/api';
 import charactersReducer from './charactersSlice';
 import selectedItemsReducer from './selectedItemsSlice';
+import selectionReducer from './selectionSlice';
 
 const store = configureStore({
   reducer: {
     characters: charactersReducer,
     selectedItems: selectedItemsReducer,
+    selection: selectionReducer,
     [api.reducerPath]: api.reducer,
   },
   middleware: (getDefaultMiddleware) =>

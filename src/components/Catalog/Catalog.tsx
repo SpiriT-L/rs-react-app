@@ -1,5 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { usePopup } from '../../hooks/usePopup';
+import useSelection from '../../hooks/useSelection';
 import { useGetCharactersQuery } from '../../services/api';
 import Button from '../Button/Button';
 import CardList from '../CardList/CardList';
@@ -28,6 +30,15 @@ const Catalog: React.FC = () => {
 
   const characters = useMemo(() => data?.results || [], [data]);
   const totalPages = data?.info?.pages || 0;
+
+  const { selectedItems } = useSelection();
+  const { showPopup } = usePopup();
+
+  useEffect(() => {
+    if (selectedItems.length > 0) {
+      showPopup();
+    }
+  }, [selectedItems, showPopup]);
 
   const handleInputChange = (value: string) => {
     setInputValue(value);

@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { CardListProps } from '../../types/Interface';
 import Card from '../Card/Card';
-import styles from './CardList.module.scss';
+import style from './CardList.module.scss';
 
 const CardList: FC<CardListProps> = ({ characters, onCharacterClick }) => {
   const handleCardClick = (id: string) => {
@@ -9,22 +9,22 @@ const CardList: FC<CardListProps> = ({ characters, onCharacterClick }) => {
   };
 
   if (characters.length === 0) {
-    return (
-      <p className={styles.noCharactersMessage}>No characters available</p>
-    );
+    return <p className={style.noCharactersMessage}>No characters available</p>;
   }
 
   return (
-    <div className={styles.cardContainer}>
-      <ul className={styles.cardList}>
-        {characters.map((character) => (
-          <Card
-            key={character.id}
-            character={character}
-            name={character.name}
-            image={character.image}
-            onClick={() => handleCardClick(character.id.toString())}
-          />
+    <div className={style.cardContainer}>
+      <ul className={style.cardList}>
+        {characters.map((character, name) => (
+          <li className={style.card} key={name}>
+            <Card
+              key={character.id}
+              character={character}
+              name={character.name}
+              image={character.image}
+              onClick={() => handleCardClick(character.id.toString())}
+            />
+          </li>
         ))}
       </ul>
     </div>

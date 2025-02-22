@@ -75,3 +75,9 @@ export interface LayoutProps {
 export interface LoadingProps {
   message?: string;
 }
+
+export interface PopupContextProps {
+  isVisible: boolean;
+  showPopup: () => void;
+  hidePopup: () => void;
+}
