@@ -27,7 +27,7 @@ const Card: React.FC<CardProps> = ({
   };
 
   return (
-    <div onClick={onClick}>
+    <div className={style.card} onClick={onClick}>
       <input
         className={style.cardChec}
         type="checkbox"

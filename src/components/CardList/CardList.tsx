@@ -16,7 +16,7 @@ const CardList: FC<CardListProps> = ({ characters, onCharacterClick }) => {
     <div className={style.cardContainer}>
       <ul className={style.cardList}>
         {characters.map((character, name) => (
-          <li className={style.card} key={name}>
+          <li key={name}>
             <Card
               key={character.id}
               character={character}

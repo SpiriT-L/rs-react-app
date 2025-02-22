@@ -18,24 +18,3 @@
   text-align: center;
   margin-top: 2rem;
 }
-
-.card {
-  position: relative;
-  list-style: none;
-  margin: 10px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  transition:
-    box-shadow 0.3s,
-    border-color 0.3s;
-  cursor: pointer;
-  &:hover {
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-color: #bbb;
-
-    .cardChec {
-      opacity: 1;
-    }
-  }
-}

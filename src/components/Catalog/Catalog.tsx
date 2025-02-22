@@ -82,7 +82,7 @@ const Catalog: React.FC = () => {
   }
 
   return (
-    <main className={style.main}>
+    <>
       <section>
         <div className={style.searchContainer}>
           <div className={style.search}>
@@ -131,7 +131,7 @@ const Catalog: React.FC = () => {
       <section>
         <ErrorButton onClick={handleThrowError} />
       </section>
-    </main>
+    </>
   );
 };
 
