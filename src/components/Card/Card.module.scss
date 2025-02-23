@@ -1,0 +1,66 @@
+.card {
+  position: relative;
+  list-style: none;
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  transition:
+    box-shadow 0.3s,
+    border-color 0.3s;
+  cursor: pointer;
+  &:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    border-color: #45a049;
+
+    .cardChec {
+      opacity: 1;
+    }
+  }
+}
+
+.cardChec {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  transition:
+    background-color 0.3s,
+    border-color 0.3s,
+    opacity 0.3s;
+  opacity: 0;
+
+  &:checked {
+    background-color: #4caf50;
+    border-color: #4caf50;
+    opacity: 1;
+  }
+
+  &:checked::after {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 5px;
+    width: 5px;
+    height: 13px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+  }
+
+  &:hover {
+    border-color: #45a049;
+  }
+
+  &:focus {
+    box-shadow: 0 0 2px 2px rgba(0, 255, 0, 0.2);
+  }
+}
