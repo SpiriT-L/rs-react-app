@@ -131,13 +131,15 @@ describe('Card Component', () => {
     expect(checkbox).not.toBeChecked();
 
     fireEvent.click(checkbox);
-    expect(store.getState().selection.selectedItems).toContain(character.name);
+    expect(store.getState().selection.selectedItems).toContainEqual(
+      expect.objectContaining({ name: character.name })
+    );
   });
 
   it('keeps checkbox checked if character is selected', () => {
     const store = createMockStore({
       selection: {
-        selectedItems: [character.name],
+        selectedItems: [character],
       },
     });
 

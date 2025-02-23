@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleSelectItem } from '../../store/selectionSlice';
 import { RootState } from '../../store/store';
-import { CardProps } from '../../types/Interface';
+import { CardProps, SelectedItem } from '../../types/Interface';
 import styles from './Card.module.scss';
 
 const Card: React.FC<CardProps> = ({
@@ -18,12 +18,29 @@ const Card: React.FC<CardProps> = ({
 }) => {
   const dispatch = useDispatch();
   const isSelected = useSelector((state: RootState) =>
-    state.selection.selectedItems.includes(name)
+    state.selection.selectedItems.some(
+      (item: SelectedItem) => item.name === name
+    )
   );
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
-    dispatch(toggleSelectItem(name));
+    const selectedItem: SelectedItem = {
+      name,
+      image,
+      status: status ?? '',
+      species: species ?? '',
+      type: type ?? '',
+      gender: gender ?? '',
+      locationName: locationName ?? '',
+      locationUrl: '',
+      originName: originName ?? '',
+      originUrl: '',
+      episode: [],
+      url: '',
+      created: '',
+    };
+    dispatch(toggleSelectItem(selectedItem));
   };
 
   const isDarkMode = document.body.classList.contains('dark');

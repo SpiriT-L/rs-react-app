@@ -12,6 +12,9 @@ export interface Character {
   };
   gender: string;
   type: string;
+  episode: string[];
+  url: string;
+  created: string;
 }
 
 export interface ButtonProps {
@@ -84,4 +87,24 @@ export interface PopupContextProps {
 
 export interface ThemeProviderProps {
   children: React.ReactNode;
+}
+
+export interface SelectedItem {
+  name: string;
+  image: string;
+  status: string;
+  species: string;
+  type: string;
+  gender: string;
+  locationName: string;
+  locationUrl: string;
+  originName: string;
+  originUrl: string;
+  episode: string[];
+  url: string;
+  created: string;
+}
+
+export interface PopupState {
+  isVisible: boolean;
 }

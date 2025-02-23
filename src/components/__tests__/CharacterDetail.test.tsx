@@ -34,6 +34,7 @@ describe('CharacterDetails Component', () => {
         origin: { name: 'Earth' },
         gender: 'Male',
         type: '',
+        episode: [],
       },
       isLoading: false,
       error: null,

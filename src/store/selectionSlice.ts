@@ -1,7 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { SelectedItem } from '../types/Interface';
 
 interface SelectionState {
-  selectedItems: string[];
+  selectedItems: SelectedItem[];
 }
 
 const initialState: SelectionState = {
@@ -12,12 +13,15 @@ const selectionSlice = createSlice({
   name: 'selection',
   initialState,
   reducers: {
-    toggleSelectItem: (state, action) => {
-      const itemId = action.payload;
-      if (state.selectedItems.includes(itemId)) {
-        state.selectedItems = state.selectedItems.filter((id) => id !== itemId);
+    toggleSelectItem: (state, action: PayloadAction<SelectedItem>) => {
+      const itemId = action.payload.name;
+      const existingIndex = state.selectedItems.findIndex(
+        (item) => item.name === itemId
+      );
+      if (existingIndex >= 0) {
+        state.selectedItems.splice(existingIndex, 1);
       } else {
-        state.selectedItems.push(itemId);
+        state.selectedItems.push(action.payload);
       }
     },
     unselectAllItems: (state) => {
