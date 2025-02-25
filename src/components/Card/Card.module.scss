@@ -1,0 +1,32 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 0.625rem;
+  padding: 0.625rem;
+  word-break: break-word;
+  cursor: pointer;
+}
+
+.title {
+  text-align: center;
+  font-size: 1.25rem;
+  word-break: break-word;
+}
+
+.img {
+  border-radius: 0.625rem;
+}
+
+.subTitle {
+  font-weight: bold;
+  word-break: break-word;
+  font-size: 1rem;
+}
+
+.description {
+  font-style: italic;
+  font-size: 0.875rem;
+}

@@ -1,0 +1,34 @@
+import { FC } from 'react';
+import styles from './Footer.module.scss';
+
+const Footer: FC = () => {
+  return (
+    <footer className={styles.footer}>
+      <ul className={styles.list}>
+        <li className={styles.itemList}>
+          <a
+            className={styles.linkList}
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://rs.school/courses/reactjs"
+          >
+            RSSchool
+          </a>
+        </li>
+        <li className={styles.itemList}>React 2025 Q1</li>
+        <li className={styles.itemList}>
+          <a
+            className={styles.linkList}
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://github.com/SpiriT-L"
+          >
+            GitHub
+          </a>
+        </li>
+      </ul>
+    </footer>
+  );
+};
+
+export default Footer;
