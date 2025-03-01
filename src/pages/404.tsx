@@ -1,6 +1,7 @@
+// src/pages/404.tsx
+import Link from 'next/link';
 import React from 'react';
-import { Link } from 'react-router-dom';
-import styles from './NotFound.module.scss';
+import styles from './404.module.scss';
 
 const NotFound: React.FC = () => {
   return (
@@ -10,7 +11,9 @@ const NotFound: React.FC = () => {
       <p className={styles.message}>
         Oops! The page you are looking for does not exist.
       </p>
-      <Link to="/">Go back to Home</Link>
+      <Link href="/">
+        <a>Go back to Home</a>
+      </Link>
     </div>
   );
 };
