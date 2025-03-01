@@ -1,9 +1,4 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
@@ -18,7 +13,26 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": false,
-    "jsx": "react-jsx",
-    "types": ["vitest/globals", "@testing-library/jest-dom"]
-  }
+    "jsx": "preserve",
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/pages/*": ["src/pages/*"],
+      "@/components/*": ["src/components/*"]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "next-env.d.ts",
+    "./dist/types/**/*.ts"
+  ],
+  "exclude": ["node_modules"]
 }
