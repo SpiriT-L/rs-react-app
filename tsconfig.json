@@ -14,7 +14,7 @@
     "isolatedModules": true,
     "noEmit": false,
     "jsx": "preserve",
-    "types": ["vitest/globals", "@testing-library/jest-dom"],
+    "types": ["vitest/globals", "vitest", "node", "@testing-library/jest-dom"],
     "incremental": true,
     "baseUrl": ".",
     "paths": {

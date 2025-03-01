@@ -72,6 +72,7 @@ export interface PaginationProps {
 }
 
 export interface LayoutProps {
+  children: React.ReactNode;
   className?: string;
 }
 

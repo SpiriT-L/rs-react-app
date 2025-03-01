@@ -5,7 +5,7 @@ interface ThemeState {
 }
 
 const initialState: ThemeState = {
-  theme: (localStorage.getItem('theme') as 'light' | 'dark') || 'light',
+  theme: 'light',
 };
 
 const themeSlice = createSlice({
@@ -14,7 +14,9 @@ const themeSlice = createSlice({
   reducers: {
     setTheme: (state, action: PayloadAction<'light' | 'dark'>) => {
       state.theme = action.payload;
-      localStorage.setItem('theme', action.payload);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('theme', action.payload);
+      }
     },
   },
 });

@@ -1,5 +1,5 @@
+import Link from 'next/link';
 import { FC, useState } from 'react';
-import { Link } from 'react-router-dom';
 import ThemeSwitcher from '../ThemeSwitcher/ThemeSwitcher';
 import styles from './Header.module.scss';
 
@@ -14,17 +14,18 @@ const Header: FC = () => {
     setIsMenuOpen(false);
   };
 
-  const isDarkMode = document.body.classList.contains('dark');
+  const isDarkMode =
+    typeof document !== 'undefined' && document.body.classList.contains('dark');
 
   return (
     <header className={styles.header}>
       <h1>
-        <Link to="/" className={styles.title} onClick={closeMenu}>
+        <Link href="/" passHref className={styles.title}>
           Rick & Morty
         </Link>
       </h1>
       <nav className={`${styles.nav} ${isMenuOpen ? styles.open : ''}`}>
-        <Link to="/" className={styles.link} onClick={closeMenu}>
+        <Link href="/" passHref className={styles.link}>
           Home
         </Link>
         <ThemeSwitcher />

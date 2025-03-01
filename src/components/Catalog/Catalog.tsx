@@ -1,26 +1,26 @@
+import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { usePopup } from '../../hooks/usePopup';
-import useSelection from '../../hooks/useSelection';
-import { useGetCharactersQuery } from '../../services/api';
 import Button from '../Button/Button';
 import CardList from '../CardList/CardList';
+import style from './Catalog.module.scss';
 import CharacterDetails from '../CharacterDetails/CharacterDetails';
 import ErrorButton from '../ErrorButton/ErrorButton';
 import ErrorDisplay from '../ErrorDisplay/ErrorDisplay';
 import Input from '../Input/Input';
 import Loader from '../Loader/Loader';
 import Pagination from '../Pagination/Pagination';
-import style from './Catalog.module.scss';
+import { usePopup } from '../../hooks/usePopup';
+import useSelection from '../../hooks/useSelection';
+import { useGetCharactersQuery } from '../../services/api';
 
 const ITEMS_PER_PAGE = 10;
 
 const Catalog: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [throwError, setThrowError] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const currentPage = parseInt(searchParams.get('page') || '1', 10);
-  const selectedCharacterId = searchParams.get('details');
+  const router = useRouter();
+  const currentPage = parseInt((router.query.page as string) || '1', 10);
+  const selectedCharacterId = router.query.details as string;
 
   const { data, error, isLoading } = useGetCharactersQuery({
     name: inputValue,
@@ -42,17 +42,17 @@ const Catalog: React.FC = () => {
 
   const handleInputChange = (value: string) => {
     setInputValue(value);
-    setSearchParams({ page: '1' });
+    router.push(`/?page=1`);
   };
 
   const handleEnterPress = (valid: boolean) => {
     if (valid) {
-      setSearchParams({ page: '1' });
+      router.push(`/?page=1`);
     }
   };
 
   const handleButtonClick = () => {
-    setSearchParams({ page: '1' });
+    router.push(`/?page=1`);
   };
 
   const handleThrowError = () => {
@@ -60,15 +60,15 @@ const Catalog: React.FC = () => {
   };
 
   const handlePageChange = (page: number) => {
-    setSearchParams({ page: page.toString() });
+    router.push(`/?page=${page}`);
   };
 
   const handleCharacterClick = (id: string) => {
-    setSearchParams({ page: currentPage.toString(), details: id });
+    router.push(`/?page=${currentPage}&details=${id}`);
   };
 
   const handleCloseDetails = () => {
-    setSearchParams({ page: currentPage.toString() });
+    router.push(`/?page=${currentPage}`);
   };
 
   const handleLeftSectionClick = () => {

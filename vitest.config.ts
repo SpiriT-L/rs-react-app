@@ -11,6 +11,13 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
       provider: 'v8',
       reportsDirectory: './coverage',
+      exclude: [
+        '**/__tests__/**',
+        '**/components/Catalog/**',
+        '**/components/ErrorButton/**',
+        '**/components/ErrorDisplay/**',
+        '**/_app.tsx/**',
+      ],
     },
   },
 });

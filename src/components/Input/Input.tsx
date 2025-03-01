@@ -1,3 +1,4 @@
+import React from 'react';
 import { ChangeEvent, FC, KeyboardEvent, useState } from 'react';
 import { InputProps } from '../../types/Interface';
 import styles from './input.module.scss';

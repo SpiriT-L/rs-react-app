@@ -44,21 +44,21 @@ const CharacterDetails: React.FC<CharacterDetailsProps> = ({
         >
           Close
         </button>
-        <h2>{character.name}</h2>
-        <img src={character.image} alt={character.name} />
-        <p>Status: {character.status}</p>
-        <p>Species: {character.species}</p>
-        <p>Type: {character.type}</p>
-        <p>Gender: {character.gender}</p>
-        <p>
+        <h2 className={style.title}>{character.name}</h2>
+        <img className={style.img} src={character.image} alt={character.name} />
+        <p className={style.p}>Status: {character.status}</p>
+        <p className={style.p}>Species: {character.species}</p>
+        <p className={style.p}>Type: {character.type}</p>
+        <p className={style.p}>Gender: {character.gender}</p>
+        <p className={style.p}>
           Location: {character.location.name} ({character.location.url})
         </p>
-        <p>
+        <p className={style.p}>
           Origin: {character.origin.name} ({character.origin.url})
         </p>
-        <p>Episodes: {character.episode.join(', ')}</p>
-        <p>URL: {character.url}</p>
-        <p>Created: {character.created}</p>
+        <p className={style.p}>Episodes: {character.episode.join(', ')}</p>
+        <p className={style.p}>URL: {character.url}</p>
+        <p className={style.p}>Created: {character.created}</p>
       </div>
     </div>
   );

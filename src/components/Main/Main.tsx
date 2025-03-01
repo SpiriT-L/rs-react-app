@@ -1,14 +1,8 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
-import style from './Main.module.scss';
 import { LayoutProps } from '../../types/Interface';
 
-const Main: React.FC<LayoutProps> = ({ className }) => {
-  return (
-    <div className={`${style.main} ${className}`}>
-      <Outlet />
-    </div>
-  );
+const Main: React.FC<LayoutProps> = ({ className, children }) => {
+  return <main className={`${className}`}>{children}</main>;
 };
 
 export default Main;
