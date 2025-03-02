@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FC, useState } from 'react';
+import React, { FC, useState } from 'react';
 import ThemeSwitcher from '../ThemeSwitcher/ThemeSwitcher';
 import styles from './Header.module.scss';
 
