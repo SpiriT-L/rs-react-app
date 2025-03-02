@@ -1,6 +1,7 @@
+import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import Pagination from '../../components/Pagination/Pagination';
+import Pagination from '../Pagination/Pagination';
 
 describe('Pagination Component', () => {
   const setup = (totalPages: number, currentPage: number) => {
