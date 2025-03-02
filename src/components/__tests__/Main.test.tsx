@@ -1,31 +1,36 @@
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
-import Main from '../../components/Main/Main';
+import React from 'react'; // Добавлен импорт React
+import { describe, expect, it, vi } from 'vitest'; // Импортируйте vi из vitest
+import Main from '../Main/Main';
+
+// Мокируем next/router
+vi.mock('next/router', () => ({
+  useRouter: () => ({
+    query: {},
+    push: vi.fn(),
+  }),
+}));
 
 describe('Main Component', () => {
-  const setup = (initialRoute = '/') => {
-    return render(
-      <MemoryRouter initialEntries={[initialRoute]}>
-        <Routes>
-          <Route path="/" element={<Main />} />
-          <Route path="/child" element={<div>Child Component</div>} />
-        </Routes>
-      </MemoryRouter>
-    );
+  const renderWithProviders = (ui: React.ReactElement) => {
+    return render(ui);
   };
 
-  it('renders Outlet component', () => {
-    setup('/child');
+  it('renders children correctly', () => {
+    renderWithProviders(
+      <Main className="custom-class">
+        <div>Child Component</div>
+      </Main>
+    );
     expect(screen.getByText('Child Component')).toBeInTheDocument();
   });
 
   it('renders with correct className', () => {
     const className = 'custom-class';
-    const { container } = render(
-      <MemoryRouter>
-        <Main className={className} />
-      </MemoryRouter>
+    const { container } = renderWithProviders(
+      <Main className={className}>
+        <div>Content</div>
+      </Main>
     );
     expect(container.firstChild).toHaveClass(className);
   });
