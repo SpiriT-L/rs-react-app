@@ -1,17 +1,17 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
+import { usePopup } from '../../hooks/usePopup';
+import useSelection from '../../hooks/useSelection';
+import { useGetCharactersQuery } from '../../services/api';
 import Button from '../Button/Button';
 import CardList from '../CardList/CardList';
-import style from './Catalog.module.scss';
 import CharacterDetails from '../CharacterDetails/CharacterDetails';
 import ErrorButton from '../ErrorButton/ErrorButton';
 import ErrorDisplay from '../ErrorDisplay/ErrorDisplay';
 import Input from '../Input/Input';
 import Loader from '../Loader/Loader';
 import Pagination from '../Pagination/Pagination';
-import { usePopup } from '../../hooks/usePopup';
-import useSelection from '../../hooks/useSelection';
-import { useGetCharactersQuery } from '../../services/api';
+import style from './Catalog.module.scss';
 
 const ITEMS_PER_PAGE = 10;
 
