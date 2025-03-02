@@ -1,6 +1,10 @@
+import React from 'react';
 import { FC } from 'react';
-import { ErrorButtonProps } from '../../types/Interface';
 import styles from './ErrorButton.module.scss';
+
+interface ErrorButtonProps {
+  onClick: () => void;
+}
 
 const ErrorButton: FC<ErrorButtonProps> = ({ onClick }) => {
   return (

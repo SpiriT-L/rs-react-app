@@ -32,7 +32,7 @@ const Popup: React.FC = () => {
     document.body.appendChild(link); // Append the link to the body
     link.click();
     URL.revokeObjectURL(url);
-    document.body.removeChild(link); // Remove the link after clicking
+    document.body.removeChild(link);
   };
 
   if (!isVisible) return null;
