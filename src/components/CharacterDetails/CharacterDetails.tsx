@@ -17,7 +17,7 @@ const CharacterDetails: React.FC<CharacterDetailsProps> = ({
 
   if (isLoading) {
     return (
-      <div className={style.loadingContainer}>
+      <div data-testid="loader" className={style.loadingContainer}>
         <Loader />
       </div>
     );

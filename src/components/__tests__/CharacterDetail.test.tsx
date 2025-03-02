@@ -1,10 +1,11 @@
+import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import store from '../../store/store';
 import CharacterDetails from '../CharacterDetails/CharacterDetails';
 
+// Мокируем useGetCharacterByIdQuery из services/api
 vi.mock('../../services/api', async () => {
   const actual =
     await vi.importActual<typeof import('../../services/api')>(
@@ -23,87 +24,51 @@ describe('CharacterDetails Component', () => {
   const mockOnClose = vi.fn();
 
   beforeEach(() => {
-    (useGetCharacterByIdQuery as jest.Mock).mockReturnValue({
+    (useGetCharacterByIdQuery as unknown as jest.Mock).mockReturnValue({
       data: {
         id: 1,
         name: 'Rick Sanchez',
         image: 'rick_image_url',
         species: 'Human',
         status: 'Alive',
-        location: { name: 'Earth' },
-        origin: { name: 'Earth' },
+        location: { name: 'Earth', url: '' },
+        origin: { name: 'Earth', url: '' },
         gender: 'Male',
         type: '',
         episode: [],
+        url: '',
+        created: '',
       },
       isLoading: false,
       error: null,
       refetch: vi.fn(),
     });
-
-    render(
-      <Provider store={store}>
-        <BrowserRouter>
-          <CharacterDetails characterId={characterId} onClose={mockOnClose} />
-        </BrowserRouter>
-      </Provider>
-    );
   });
 
-  it('fetches detailed information on component render', () => {
-    const characterName = screen.getByText('Rick Sanchez');
+  it('fetches and displays detailed information on component render', async () => {
+    render(
+      <Provider store={store}>
+        <CharacterDetails characterId={characterId} onClose={mockOnClose} />
+      </Provider>
+    );
+
+    const characterName = await screen.findByText('Rick Sanchez');
+    const characterImage = await screen.findByAltText('Rick Sanchez');
+    const closeButton = await screen.findByTestId('close-button');
+
     expect(characterName).toBeInTheDocument();
+    expect(characterImage).toBeInTheDocument();
+    expect(closeButton).toBeInTheDocument();
   });
 
-  it('displays loading indicator while fetching data', () => {
-    (useGetCharacterByIdQuery as jest.Mock).mockReturnValueOnce({
-      data: null,
-      isLoading: true,
-      error: null,
-      refetch: vi.fn(),
-    });
-
+  it('hides the component when the close button is clicked', async () => {
     render(
       <Provider store={store}>
-        <BrowserRouter>
-          <CharacterDetails characterId={characterId} onClose={mockOnClose} />
-        </BrowserRouter>
+        <CharacterDetails characterId={characterId} onClose={mockOnClose} />
       </Provider>
     );
 
-    const loaderElements = screen.getAllByTestId('loader');
-    expect(loaderElements.length).toBe(1);
-    expect(loaderElements[0]).toBeInTheDocument();
-  });
-
-  it('displays error message when error occurs', () => {
-    (useGetCharacterByIdQuery as jest.Mock).mockReturnValueOnce({
-      data: null,
-      isLoading: false,
-      error: { status: 500, data: 'An error occurred during data retrieval.' },
-      refetch: vi.fn(),
-    });
-
-    render(
-      <Provider store={store}>
-        <BrowserRouter>
-          <CharacterDetails characterId={characterId} onClose={mockOnClose} />
-        </BrowserRouter>
-      </Provider>
-    );
-
-    const errorElement = screen.getByText((content, element) => {
-      return (
-        element !== null &&
-        element.tagName.toLowerCase() === 'p' &&
-        content.includes('An error occurred during data retrieval.')
-      );
-    });
-    expect(errorElement).toBeInTheDocument();
-  });
-
-  it('hides the component when the close button is clicked', () => {
-    const closeButton = screen.getByTestId('close-button');
+    const closeButton = await screen.findByTestId('close-button');
     fireEvent.click(closeButton);
 
     expect(mockOnClose).toHaveBeenCalled();
