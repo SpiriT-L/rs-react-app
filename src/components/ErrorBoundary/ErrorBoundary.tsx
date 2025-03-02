@@ -1,4 +1,4 @@
-import { Component, ErrorInfo } from 'react';
+import React, { Component, ErrorInfo } from 'react';
 import { ErrorBoundaryProps, ErrorBoundaryState } from '../../types/Interface';
 import styles from './ErrorBoundary.module.scss';
 
