@@ -1,6 +1,7 @@
+import React from 'react';
 import { fireEvent, render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import Input from '../../components/Input/Input';
+import Input from '../Input/Input';
 
 describe('Input Component', () => {
   const setup = (initialValue = '', label = 'Test Label') => {
