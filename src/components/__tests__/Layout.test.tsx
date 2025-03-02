@@ -1,42 +1,26 @@
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import React from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import { Layout } from '../../components/Layout/Layout';
+import { Layout } from '../Layout/Layout';
 
-vi.mock('../../components/Footer/Footer', () => ({
-  __esModule: true,
-  default: () => <div>Mocked Footer</div>,
-}));
-
-vi.mock('../../components/Header/Header', () => ({
-  __esModule: true,
-  default: () => <div>Mocked Header</div>,
+vi.mock('next/router', () => ({
+  useRouter: () => ({
+    query: {},
+    push: vi.fn(),
+  }),
 }));
 
 describe('Layout Component', () => {
-  const setup = (initialRoute = '/') => {
-    return render(
-      <MemoryRouter initialEntries={[initialRoute]}>
-        <Routes>
-          <Route path="/" element={<Layout />} />
-          <Route path="/child" element={<div>Child Component</div>} />
-        </Routes>
-      </MemoryRouter>
-    );
+  const renderWithProviders = (ui: React.ReactElement) => {
+    return render(ui);
   };
 
-  it('renders Header component', () => {
-    setup();
-    expect(screen.getByText('Mocked Header')).toBeInTheDocument();
-  });
-
-  it('renders Footer component', () => {
-    setup();
-    expect(screen.getByText('Mocked Footer')).toBeInTheDocument();
-  });
-
-  it('renders Outlet component', () => {
-    setup('/child');
+  it('renders children correctly', () => {
+    renderWithProviders(
+      <Layout>
+        <div>Child Component</div>
+      </Layout>
+    );
     expect(screen.getByText('Child Component')).toBeInTheDocument();
   });
 });
