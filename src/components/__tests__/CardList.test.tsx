@@ -1,3 +1,4 @@
+import React from 'react';
 import { configureStore } from '@reduxjs/toolkit';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -6,7 +7,6 @@ import selectionReducer from '../../store/selectionSlice';
 import { Character } from '../../types/Interface';
 import CardList from '../CardList/CardList';
 
-// Создаем mock store
 const store = configureStore({
   reducer: {
     selection: selectionReducer,
@@ -29,6 +29,9 @@ const mockCharacters: Character[] = [
     origin: { name: 'Earth' },
     gender: 'Male',
     type: '',
+    episode: [],
+    url: '',
+    created: '',
   },
   {
     id: 2,
@@ -40,6 +43,9 @@ const mockCharacters: Character[] = [
     origin: { name: 'Earth' },
     gender: 'Male',
     type: '',
+    episode: [],
+    url: '',
+    created: '',
   },
 ];
 
