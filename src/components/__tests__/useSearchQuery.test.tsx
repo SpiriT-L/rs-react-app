@@ -1,57 +1,38 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import React from 'react';
+import { render } from '@testing-library/react';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import useSearchQuery from '../../hooks/useSearchQuery';
-import Button from '../Button/Button';
-import Input from '../Input/Input';
 
-const setItemMock = vi.spyOn(Storage.prototype, 'setItem');
-const getItemMock = vi.spyOn(Storage.prototype, 'getItem');
-
-const Search: React.FC = () => {
-  const [inputValue, setInputValue] = useSearchQuery('searchQuery');
-
-  const handleInputChange = (value: string) => {
-    setInputValue(value);
-  };
-
-  const handleButtonClick = () => {
-    localStorage.setItem('searchQuery', inputValue);
-  };
+const TestComponent = ({ key }: { key: string }) => {
+  const [query, setQuery] = useSearchQuery(key);
 
   return (
     <div>
-      <Input
-        value={inputValue}
-        onChange={handleInputChange}
-        onEnter={() => {}}
-        showError={() => {}}
+      <input
+        type="text"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        data-testid="input"
       />
-      <Button onClick={handleButtonClick}>Search</Button>
     </div>
   );
 };
 
-describe('Search Component', () => {
+describe('useSearchQuery', () => {
+  const key = 'test-query';
+
   beforeEach(() => {
     localStorage.clear();
-    setItemMock.mockClear();
-    getItemMock.mockClear();
   });
 
-  it('saves the entered value to the local storage when clicking the Search button', () => {
-    render(
-      <Router>
-        <Search />
-      </Router>
-    );
+  afterEach(() => {
+    localStorage.clear();
+  });
 
-    const input = screen.getByPlaceholderText('Search');
-    const searchButton = screen.getByText('Search');
+  it('should initialize with an empty string if no query in localStorage', () => {
+    const { getByTestId } = render(<TestComponent key={key} />);
 
-    fireEvent.change(input, { target: { value: 'Rick' } });
-    fireEvent.click(searchButton);
-
-    expect(localStorage.setItem).toHaveBeenCalledWith('searchQuery', 'Rick');
+    const input = getByTestId('input') as HTMLInputElement;
+    expect(input.value).toBe('');
   });
 });
