@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import NotFound from '../../pages/404';
+import NotFound from '../../not-found';
 
 vi.mock('next/router', () => ({
   useRouter: () => ({

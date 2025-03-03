@@ -18,8 +18,8 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/pages/*": ["src/pages/*"],
-      "@/components/*": ["src/components/*"]
+      "@/pages/*": ["app/pages/*"],
+      "@/components/*": ["app/components/*"]
     },
     "plugins": [
       {

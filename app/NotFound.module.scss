@@ -8,10 +8,12 @@
   color: #ecf0f1;
   text-align: center;
   font-family: 'Get Schwifty', sans-serif;
+  margin-bottom: 20px;
+  padding: 20px;
 }
 
 .title {
-  font-size: 4rem;
+  font-size: 2rem;
   margin-bottom: 1rem;
 }
 
@@ -20,10 +22,14 @@
   margin-bottom: 2rem;
 }
 
+.link {
+  color: #00b1c8;
+  cursor: pointer;
+}
+
 .portal {
   width: 200px;
   height: 200px;
-  background: url('/portal.png') no-repeat center center;
   background-size: contain;
   animation: spin 4s infinite linear;
 }

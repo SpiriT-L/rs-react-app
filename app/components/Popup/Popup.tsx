@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect } from 'react';
 import { usePopup } from '../../hooks/usePopup';
 import useSelection from '../../hooks/useSelection';

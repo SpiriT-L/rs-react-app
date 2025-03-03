@@ -1,4 +1,6 @@
-import { useRouter } from 'next/router';
+'use client';
+
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 import { usePopup } from '../../hooks/usePopup';
 import useSelection from '../../hooks/useSelection';
@@ -19,8 +21,12 @@ const Catalog: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [throwError, setThrowError] = useState(false);
   const router = useRouter();
-  const currentPage = parseInt((router.query.page as string) || '1', 10);
-  const selectedCharacterId = router.query.details as string;
+
+  const query = new URLSearchParams(
+    typeof window !== 'undefined' ? window.location.search : ''
+  );
+  const currentPage = parseInt(query.get('page') || '1', 10);
+  const selectedCharacterId = query.get('details');
 
   const { data, error, isLoading } = useGetCharactersQuery({
     name: inputValue,
