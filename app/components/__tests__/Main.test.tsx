@@ -1,9 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import React from 'react'; // Добавлен импорт React
-import { describe, expect, it, vi } from 'vitest'; // Импортируйте vi из vitest
+import React from 'react';
+import { describe, expect, it, vi } from 'vitest';
 import Main from '../Main/Main';
 
-// Мокируем next/router
 vi.mock('next/router', () => ({
   useRouter: () => ({
     query: {},

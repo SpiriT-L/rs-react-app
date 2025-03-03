@@ -5,7 +5,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import store from '../../store/store';
 import CharacterDetails from '../CharacterDetails/CharacterDetails';
 
-// Мокируем useGetCharacterByIdQuery из services/api
 vi.mock('../../services/api', async () => {
   const actual =
     await vi.importActual<typeof import('../../services/api')>(

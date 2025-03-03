@@ -31,7 +31,7 @@ const Popup: React.FC = () => {
     const link = document.createElement('a');
     link.href = url;
     link.download = `${selectedItems.length}_selected_items.csv`;
-    document.body.appendChild(link); // Append the link to the body
+    document.body.appendChild(link);
     link.click();
     URL.revokeObjectURL(url);
     document.body.removeChild(link);
