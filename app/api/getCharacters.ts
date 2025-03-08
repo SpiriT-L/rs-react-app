@@ -9,7 +9,10 @@ export const getCharacters = async (
 ): Promise<{ results: Character[]; totalPages: number }> => {
   try {
     const response = await fetch(
-      `${API_URL}?name=${query}&page=${page}&limit=${itemsPerPage}`
+      `${API_URL}?name=${query}&page=${page}&limit=${itemsPerPage}`,
+      {
+        cache: 'no-store',
+      }
     );
     if (!response.ok) {
       throw new Error('Error during data retrieval');

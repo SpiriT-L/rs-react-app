@@ -20,13 +20,19 @@ const ITEMS_PER_PAGE = 10;
 const Catalog: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [throwError, setThrowError] = useState(false);
+  const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(
+    null
+  );
   const router = useRouter();
 
-  const query = new URLSearchParams(
-    typeof window !== 'undefined' ? window.location.search : ''
+  const searchParams =
+    typeof window !== 'undefined' ? window.location.search : '';
+  const query = useMemo(
+    () => new URLSearchParams(searchParams),
+    [searchParams]
   );
+
   const currentPage = parseInt(query.get('page') || '1', 10);
-  const selectedCharacterId = query.get('details');
 
   const { data, error, isLoading } = useGetCharactersQuery({
     name: inputValue,
@@ -45,6 +51,10 @@ const Catalog: React.FC = () => {
       showPopup();
     }
   }, [selectedItems, showPopup]);
+
+  useEffect(() => {
+    setSelectedCharacterId(query.get('details'));
+  }, [query]);
 
   const handleInputChange = (value: string) => {
     setInputValue(value);
@@ -70,10 +80,12 @@ const Catalog: React.FC = () => {
   };
 
   const handleCharacterClick = (id: string) => {
+    setSelectedCharacterId(id);
     router.push(`/?page=${currentPage}&details=${id}`);
   };
 
   const handleCloseDetails = () => {
+    setSelectedCharacterId(null);
     router.push(`/?page=${currentPage}`);
   };
 
