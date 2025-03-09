@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { usePopup } from '../../hooks/usePopup';
 import useSelection from '../../hooks/useSelection';
 import { useGetCharactersQuery } from '../../services/api';
@@ -18,9 +18,19 @@ const ITEMS_PER_PAGE = 10;
 const Catalog: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [throwError, setThrowError] = useState(false);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const currentPage = parseInt(searchParams.get('page') || '1', 10);
-  const selectedCharacterId = searchParams.get('details');
+  const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(
+    null
+  );
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const searchParams = location.search;
+  const query = useMemo(
+    () => new URLSearchParams(searchParams),
+    [searchParams]
+  );
+
+  const currentPage = parseInt(query.get('page') || '1', 10);
 
   const { data, error, isLoading } = useGetCharactersQuery({
     name: inputValue,
@@ -40,19 +50,23 @@ const Catalog: React.FC = () => {
     }
   }, [selectedItems, showPopup]);
 
+  useEffect(() => {
+    setSelectedCharacterId(query.get('details'));
+  }, [query]);
+
   const handleInputChange = (value: string) => {
     setInputValue(value);
-    setSearchParams({ page: '1' });
+    navigate(`/?page=1`);
   };
 
   const handleEnterPress = (valid: boolean) => {
     if (valid) {
-      setSearchParams({ page: '1' });
+      navigate(`/?page=1`);
     }
   };
 
   const handleButtonClick = () => {
-    setSearchParams({ page: '1' });
+    navigate(`/?page=1`);
   };
 
   const handleThrowError = () => {
@@ -60,15 +74,17 @@ const Catalog: React.FC = () => {
   };
 
   const handlePageChange = (page: number) => {
-    setSearchParams({ page: page.toString() });
+    navigate(`/?page=${page}`);
   };
 
   const handleCharacterClick = (id: string) => {
-    setSearchParams({ page: currentPage.toString(), details: id });
+    setSelectedCharacterId(id);
+    navigate(`/?page=${currentPage}&details=${id}`);
   };
 
   const handleCloseDetails = () => {
-    setSearchParams({ page: currentPage.toString() });
+    setSelectedCharacterId(null);
+    navigate(`/?page=${currentPage}`);
   };
 
   const handleLeftSectionClick = () => {
