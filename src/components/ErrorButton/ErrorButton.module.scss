@@ -1,0 +1,18 @@
+.errorButton {
+  background-color: #ff4d4d;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition:
+    background-color 0.3s,
+    transform 0.1s;
+  &:hover {
+    background-color: #ff1a1a;
+  }
+  &:active {
+    background-color: #e60000;
+  }
+}

@@ -1,0 +1,71 @@
+.header {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+z-index: 10;
+}
+
+.title {
+  font-family: 'rickandmorty';
+  font-size: 2.5rem;
+  color: #00b1c8;
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.link {
+  font-family: 'rickandmorty';
+  font-size: 1.5em;
+  color: #00b1c8;
+  text-decoration: none;
+}
+
+.burger {
+  font-size: 1.5em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: none;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .nav {
+    flex-direction: column;
+    position: fixed;
+    top: 0px;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    padding: 1rem;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+    z-index: 5;
+    &.open {
+      transform: translateX(0);
+    }
+  }
+  .burger {
+    display: block;
+    z-index: 6;
+  }
+}
+
+.darkMode {
+  color: #ccc;
+}
