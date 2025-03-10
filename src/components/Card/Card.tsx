@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleSelectItem } from '../../store/selectionSlice';
 import { RootState } from '../../store/store';
@@ -43,7 +43,11 @@ const Card: React.FC<CardProps> = ({
     dispatch(toggleSelectItem(selectedItem));
   };
 
-  const isDarkMode = document.body.classList.contains('dark');
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    setIsDarkMode(document.body.classList.contains('dark'));
+  }, []);
 
   return (
     <div
