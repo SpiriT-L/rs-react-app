@@ -11,10 +11,10 @@ const Header: React.FC = () => {
             <Link to="/">Home</Link>
           </li>
           <li>
-            <Link to="/uncontrolled-form">Form1</Link>
+            <Link to="/uncontrolled-form">Uncontrolled Form</Link>
           </li>
           <li>
-            <Link to="/hook-form">Form2</Link>
+            <Link to="/hook-form">Hook Form</Link>
           </li>
         </ul>
       </nav>
