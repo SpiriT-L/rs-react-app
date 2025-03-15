@@ -67,7 +67,7 @@ const Home: React.FC = () => {
   return (
     <section className={styles.SectionHome}>
       <div className={styles.home}>
-        <h1>Home Page</h1>
+        <h2>Home Page</h2>
         <p>Welcome to the home page!</p>
         <div className={styles.items}>
           <div
