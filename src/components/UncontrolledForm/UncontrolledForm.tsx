@@ -1,23 +1,9 @@
-import { yupResolver } from '@hookform/resolvers/yup';
-import React from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import React, { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { saveUncontrolledForm } from '../../store/formSlice';
 import styles from './UncontrolledForm.module.scss';
-
-interface IFormInputs {
-  name: string;
-  age: number;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  gender: string;
-  terms: boolean;
-  picture?: FileList;
-  country: string;
-}
 
 const schema = yup.object().shape({
   name: yup
@@ -26,12 +12,16 @@ const schema = yup.object().shape({
     .required('Name is required'),
   age: yup
     .number()
-    .min(0, 'Age must be a non-negative number')
-    .required('Age is required'),
+    .required('Age is required')
+    .min(0, 'Age must be a non-negative number'),
   email: yup
     .string()
     .email('Invalid email address')
     .required('Email is required'),
+  confirmEmail: yup
+    .string()
+    .oneOf([yup.ref('email'), undefined], 'Emails must match')
+    .required('Confirm Email is required'),
   password: yup
     .string()
     .matches(/\d/, 'Password must contain at least one number')
@@ -51,91 +41,130 @@ const schema = yup.object().shape({
     .boolean()
     .oneOf([true], 'You must accept the Terms and Conditions')
     .required('Terms and Conditions are required'),
-  picture: yup
-    .mixed<FileList>()
-    .test('fileSize', 'File size is too large', (value) => {
-      if (!value || value.length === 0) return true;
-      return value[0].size <= 2 * 1024 * 1024;
-    })
-    .test('fileType', 'Unsupported file format', (value) => {
-      if (!value || value.length === 0) return true;
-      return ['image/png', 'image/jpeg'].includes(value[0].type);
-    }),
+  picture: yup.mixed().required('Picture is required'),
   country: yup.string().required('Country is required'),
 });
 
 const UncontrolledForm: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isValid },
-  } = useForm<IFormInputs>({
-    resolver: yupResolver(schema),
-    mode: 'onChange',
-  });
 
-  const onSubmit: SubmitHandler<IFormInputs> = (data) => {
-    console.log('Form submitted:', data);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = reader.result as string;
-      console.log('Base64 String:', base64String);
-      dispatch(saveUncontrolledForm({ ...data, picture: base64String }));
-      console.log('Form submitted with Base64 picture:', {
-        ...data,
-        picture: base64String,
-      });
-      navigate('/');
+  const nameRef = useRef<HTMLInputElement>(null);
+  const ageRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const confirmEmailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const confirmPasswordRef = useRef<HTMLInputElement>(null);
+  const genderRef = useRef<HTMLSelectElement>(null);
+  const termsRef = useRef<HTMLInputElement>(null);
+  const pictureRef = useRef<HTMLInputElement>(null);
+  const countryRef = useRef<HTMLInputElement>(null);
+
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isTermsChecked, setIsTermsChecked] = useState(false);
+
+  const onSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const data = {
+      name: nameRef.current?.value || '',
+      age: ageRef.current?.value ? parseInt(ageRef.current.value) : 0,
+      email: emailRef.current?.value || '',
+      confirmEmail: confirmEmailRef.current?.value || '',
+      password: passwordRef.current?.value || '',
+      confirmPassword: confirmPasswordRef.current?.value || '',
+      gender: genderRef.current?.value || '',
+      terms: termsRef.current?.checked || false,
+      picture: pictureRef.current?.files || null,
+      country: countryRef.current?.value || '',
     };
-    if (data.picture && data.picture[0]) {
-      reader.readAsDataURL(data.picture[0]);
-    } else {
-      dispatch(
-        saveUncontrolledForm({
-          ...data,
-          picture: data.picture ? '' : undefined,
-        })
-      );
-      navigate('/');
-    }
+
+    schema
+      .validate(data, { abortEarly: false })
+      .then(() => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const base64String = reader.result as string;
+          dispatch(
+            saveUncontrolledForm({
+              ...data,
+              picture: base64String,
+            })
+          );
+          navigate('/');
+        };
+
+        if (data.picture && data.picture[0]) {
+          reader.readAsDataURL(data.picture[0]);
+        } else {
+          dispatch(
+            saveUncontrolledForm({
+              ...data,
+              picture: data.picture ? '' : undefined,
+            })
+          );
+          navigate('/');
+        }
+      })
+      .catch((err) => {
+        const newErrors: { [key: string]: string } = {};
+        err.inner.forEach((error: yup.ValidationError) => {
+          if (error.path) {
+            newErrors[error.path] = error.message;
+          }
+        });
+        setErrors(newErrors);
+      });
+  };
+
+  const handleTermsChange = () => {
+    setIsTermsChecked(termsRef.current?.checked || false);
   };
 
   return (
     <div className={styles.form}>
       <h2>Form using uncontrolled components</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={onSubmit}>
         <div>
           <label htmlFor="name">Name:</label>
           <input
             type="text"
             id="name"
-            {...register('name')}
-            className={errors.name ? styles.inputError : styles.inputValid}
+            ref={nameRef}
+            className={styles.inputValid}
           />
-          {errors.name && <p className={styles.error}>{errors.name.message}</p>}
+          {errors.name && <p className={styles.error}>{errors.name}</p>}
         </div>
         <div>
           <label htmlFor="age">Age:</label>
           <input
             type="number"
             id="age"
-            {...register('age')}
-            className={errors.age ? styles.inputError : styles.inputValid}
+            ref={ageRef}
+            className={styles.inputValid}
           />
-          {errors.age && <p className={styles.error}>{errors.age.message}</p>}
+          {errors.age && <p className={styles.error}>{errors.age}</p>}
         </div>
         <div>
           <label htmlFor="email">Email:</label>
           <input
             type="email"
             id="email"
-            {...register('email')}
-            className={errors.email ? styles.inputError : styles.inputValid}
+            ref={emailRef}
+            className={styles.inputValid}
           />
-          {errors.email && (
-            <p className={styles.error}>{errors.email.message}</p>
+          {errors.email && <p className={styles.error}>{errors.email}</p>}
+        </div>
+        <div>
+          <label htmlFor="confirmEmail">Confirm Email:</label>
+          <input
+            type="email"
+            id="confirmEmail"
+            ref={confirmEmailRef}
+            className={styles.inputValid}
+          />
+          {errors.confirmEmail && (
+            <p className={styles.error}>{errors.confirmEmail}</p>
           )}
         </div>
         <div>
@@ -143,80 +172,65 @@ const UncontrolledForm: React.FC = () => {
           <input
             type="password"
             id="password"
-            {...register('password')}
-            className={errors.password ? styles.inputError : styles.inputValid}
+            ref={passwordRef}
+            className={styles.inputValid}
           />
-          {errors.password && (
-            <p className={styles.error}>{errors.password.message}</p>
-          )}
+          {errors.password && <p className={styles.error}>{errors.password}</p>}
         </div>
         <div>
           <label htmlFor="confirmPassword">Confirm Password:</label>
           <input
             type="password"
             id="confirmPassword"
-            {...register('confirmPassword')}
-            className={
-              errors.confirmPassword ? styles.inputError : styles.inputValid
-            }
+            ref={confirmPasswordRef}
+            className={styles.inputValid}
           />
           {errors.confirmPassword && (
-            <p className={styles.error}>{errors.confirmPassword.message}</p>
+            <p className={styles.error}>{errors.confirmPassword}</p>
           )}
         </div>
         <div>
           <label htmlFor="gender">Gender:</label>
-          <select
-            id="gender"
-            {...register('gender')}
-            className={errors.gender ? styles.inputError : styles.inputValid}
-          >
+          <select id="gender" ref={genderRef} className={styles.inputValid}>
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>
           </select>
-          {errors.gender && (
-            <p className={styles.error}>{errors.gender.message}</p>
-          )}
+          {errors.gender && <p className={styles.error}>{errors.gender}</p>}
         </div>
         <div>
           <label htmlFor="terms">Accept Terms and Conditions:</label>
           <input
             type="checkbox"
             id="terms"
-            {...register('terms')}
-            className={errors.terms ? styles.inputError : styles.inputValid}
+            ref={termsRef}
+            className={styles.inputValid}
+            onChange={handleTermsChange}
           />
-          {errors.terms && (
-            <p className={styles.error}>{errors.terms.message}</p>
-          )}
+          {errors.terms && <p className={styles.error}>{errors.terms}</p>}
         </div>
         <div>
           <label htmlFor="picture">Upload Picture:</label>
           <input
             type="file"
             id="picture"
-            {...register('picture')}
+            ref={pictureRef}
             accept=".png, .jpeg, .jpg"
-            className={errors.picture ? styles.inputError : styles.inputValid}
+            className={styles.inputValid}
           />
-          {errors.picture && (
-            <p className={styles.error}>{errors.picture.message}</p>
-          )}
+          {errors.picture && <p className={styles.error}>{errors.picture}</p>}
         </div>
         <div>
           <label htmlFor="country">Country:</label>
           <input
             type="text"
             id="country"
-            {...register('country')}
-            className={errors.country ? styles.inputError : styles.inputValid}
+            ref={countryRef}
+            className={styles.inputValid}
           />
-          {errors.country && (
-            <p className={styles.error}>{errors.country.message}</p>
-          )}
+          {errors.country && <p className={styles.error}>{errors.country}</p>}
         </div>
-        <button type="submit" disabled={!isValid}>
+        <button type="submit" disabled={!isTermsChecked}>
           Submit
         </button>
       </form>
