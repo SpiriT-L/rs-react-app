@@ -1,9 +1,16 @@
 import React, { useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import Select, { SelectInstance } from 'react-select';
 import * as yup from 'yup';
+import { RootState } from '../../store';
 import { saveUncontrolledForm } from '../../store/formSlice';
 import styles from './UncontrolledForm.module.scss';
+
+interface CountryOption {
+  label: string;
+  value: string;
+}
 
 const schema = yup.object().shape({
   name: yup
@@ -42,12 +49,19 @@ const schema = yup.object().shape({
     .oneOf([true], 'You must accept the Terms and Conditions')
     .required('Terms and Conditions are required'),
   picture: yup.mixed().required('Picture is required'),
-  country: yup.string().required('Country is required'),
+  country: yup
+    .object()
+    .shape({
+      label: yup.string().required('Country is required'),
+      value: yup.string().required('Country is required'),
+    })
+    .required('Country is required'),
 });
 
 const UncontrolledForm: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const countries = useSelector((state: RootState) => state.form.countries);
 
   const nameRef = useRef<HTMLInputElement>(null);
   const ageRef = useRef<HTMLInputElement>(null);
@@ -58,7 +72,7 @@ const UncontrolledForm: React.FC = () => {
   const genderRef = useRef<HTMLSelectElement>(null);
   const termsRef = useRef<HTMLInputElement>(null);
   const pictureRef = useRef<HTMLInputElement>(null);
-  const countryRef = useRef<HTMLInputElement>(null);
+  const countryRef = useRef<SelectInstance<CountryOption>>(null);
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isTermsChecked, setIsTermsChecked] = useState(false);
@@ -76,7 +90,7 @@ const UncontrolledForm: React.FC = () => {
       gender: genderRef.current?.value || '',
       terms: termsRef.current?.checked || false,
       picture: pictureRef.current?.files || null,
-      country: countryRef.current?.value || '',
+      country: countryRef.current?.getValue()[0] || '',
     };
 
     schema
@@ -222,11 +236,10 @@ const UncontrolledForm: React.FC = () => {
         </div>
         <div>
           <label htmlFor="country">Country:</label>
-          <input
-            type="text"
-            id="country"
+          <Select
             ref={countryRef}
-            className={styles.inputValid}
+            options={countries}
+            className={errors.country ? styles.inputError : styles.inputValid}
           />
           {errors.country && <p className={styles.error}>{errors.country}</p>}
         </div>

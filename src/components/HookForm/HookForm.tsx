@@ -1,9 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import React from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import Select from 'react-select';
 import * as yup from 'yup';
+import { RootState } from '../../store';
 import { saveHookForm } from '../../store/formSlice';
 import styles from './HookForm.module.scss';
 
@@ -11,12 +13,13 @@ interface IFormInputs {
   name: string;
   age: number;
   email: string;
+  confirmEmail: string;
   password: string;
   confirmPassword: string;
   gender: string;
   terms: boolean;
   picture?: FileList;
-  country: string;
+  country: { label: string; value: string };
 }
 
 const schema = yup.object().shape({
@@ -32,6 +35,10 @@ const schema = yup.object().shape({
     .string()
     .email('Invalid email address')
     .required('Email is required'),
+  confirmEmail: yup
+    .string()
+    .oneOf([yup.ref('email'), undefined], 'Emails must match')
+    .required('Confirm Email is required'),
   password: yup
     .string()
     .matches(/\d/, 'Password must contain at least one number')
@@ -61,15 +68,23 @@ const schema = yup.object().shape({
       if (!value || value.length === 0) return true;
       return ['image/png', 'image/jpeg'].includes(value[0].type);
     }),
-  country: yup.string().required('Country is required'),
+  country: yup
+    .object()
+    .shape({
+      label: yup.string().required('Country is required'),
+      value: yup.string().required('Country is required'),
+    })
+    .required('Country is required'),
 });
 
 const HookForm: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const countries = useSelector((state: RootState) => state.form.countries);
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isValid },
   } = useForm<IFormInputs>({
     resolver: yupResolver(schema),
@@ -133,6 +148,20 @@ const HookForm: React.FC = () => {
           />
           {errors.email && (
             <p className={styles.error}>{errors.email.message}</p>
+          )}
+        </div>
+        <div>
+          <label htmlFor="confirmEmail">Confirm Email:</label>
+          <input
+            type="email"
+            id="confirmEmail"
+            {...register('confirmEmail')}
+            className={
+              errors.confirmEmail ? styles.inputError : styles.inputValid
+            }
+          />
+          {errors.confirmEmail && (
+            <p className={styles.error}>{errors.confirmEmail.message}</p>
           )}
         </div>
         <div>
@@ -203,11 +232,18 @@ const HookForm: React.FC = () => {
         </div>
         <div>
           <label htmlFor="country">Country:</label>
-          <input
-            type="text"
-            id="country"
-            {...register('country')}
-            className={errors.country ? styles.inputError : styles.inputValid}
+          <Controller
+            name="country"
+            control={control}
+            render={({ field }) => (
+              <Select
+                {...field}
+                options={countries}
+                className={
+                  errors.country ? styles.inputError : styles.inputValid
+                }
+              />
+            )}
           />
           {errors.country && (
             <p className={styles.error}>{errors.country.message}</p>

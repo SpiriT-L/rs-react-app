@@ -1,39 +1,38 @@
 // filepath: src/store/formSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface FormData {
-  name: string;
-  age: number;
-  email: string;
-  password: string;
-  gender: string;
-  terms: boolean;
-  picture?: string;
-  country: string;
-}
-
 interface FormState {
-  uncontrolledForm: FormData | null;
-  hookForm: FormData | null;
+  hookForm: Record<string, unknown> | null;
+  uncontrolledForm: Record<string, unknown> | null;
+  countries: { label: string; value: string }[];
 }
 
 const initialState: FormState = {
-  uncontrolledForm: null,
   hookForm: null,
+  uncontrolledForm: null,
+  countries: [
+    { label: 'United States', value: 'US' },
+    { label: 'Canada', value: 'CA' },
+    { label: 'United Kingdom', value: 'UK' },
+    // Добавьте остальные страны здесь
+  ],
 };
 
 const formSlice = createSlice({
   name: 'form',
   initialState,
   reducers: {
-    saveUncontrolledForm(state, action: PayloadAction<FormData>) {
-      state.uncontrolledForm = action.payload;
-    },
-    saveHookForm(state, action: PayloadAction<FormData>) {
+    saveHookForm(state, action: PayloadAction<Record<string, unknown>>) {
       state.hookForm = action.payload;
+    },
+    saveUncontrolledForm(
+      state,
+      action: PayloadAction<Record<string, unknown>>
+    ) {
+      state.uncontrolledForm = action.payload;
     },
   },
 });
 
-export const { saveUncontrolledForm, saveHookForm } = formSlice.actions;
+export const { saveHookForm, saveUncontrolledForm } = formSlice.actions;
 export default formSlice.reducer;
