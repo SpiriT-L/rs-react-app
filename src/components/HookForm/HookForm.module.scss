@@ -1,0 +1,103 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+
+  form {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  label {
+    margin-right: 10px;
+  }
+}
+
+.error {
+  color: red;
+}
+
+.inputError {
+  border: 1px solid red;
+}
+
+.inputValid {
+  border: 1px solid green;
+}
+
+/* filepath: d:\FrontEnd\RSSchool\React\React_2025_Q1\rs-react-app\src\index.css */
+/* ...existing code... */
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  max-width: 600px;
+  margin: auto;
+  padding: 1em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 0.5em;
+}
+
+input,
+select {
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+}
+
+.inputError {
+  border-color: #ff4d4d;
+}
+
+.inputValid {
+  border-color: #ccc;
+}
+
+.error {
+  color: #ff4d4d;
+  font-size: 0.875em;
+  margin-top: 0.25em;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #646cff;
+  color: #ffffff;
+  cursor: pointer;
+  transition:
+    border-color 0.25s,
+    background-color 0.25s;
+}
+
+button:hover {
+  border-color: #5a62fa;
+  background-color: #535bf2;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* ...existing code... */

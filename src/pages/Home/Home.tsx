@@ -108,14 +108,14 @@ const Home: React.FC = () => {
               <div className={styles.flexContainer}>
                 {Object.entries(hookForm).map(([key, value]) => (
                   <div key={key} className={styles.flexItem}>
-                    <strong>{key}:</strong>
+                    <strong className={styles.name}>{key}:</strong>
                     {key === 'picture' ? (
                       <img
                         src={`data:image/${getImageFormat(
                           value as string
                         )};base64,${decodeBase64Image(value as string)}`}
                         alt="Uploaded"
-                        style={{ width: '200px', height: '200px' }}
+                        style={{ width: '100px', height: '100px' }}
                       />
                     ) : (
                       <pre>{JSON.stringify(value, null, 2)}</pre>
