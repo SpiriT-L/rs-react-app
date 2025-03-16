@@ -1,0 +1,29 @@
+.header {
+  width: 100%;
+}
+
+.nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #f4f4f4;
+  border-bottom: 1px solid #ccc;
+  ul {
+    list-style: none;
+    display: flex;
+    gap: 10px;
+  }
+
+  li {
+    a {
+      text-decoration: none;
+      color: salmon;
+
+      &:hover {
+        text-decoration: underline;
+        color: sandybrown;
+      }
+    }
+  }
+}
