@@ -89,6 +89,17 @@ const Home: React.FC = () => {
                         alt="Uploaded"
                         style={{ width: '100px', height: '100px' }}
                       />
+                    ) : key === 'country' &&
+                      value &&
+                      typeof value === 'object' &&
+                      'label' in value ? (
+                      <pre>
+                        {JSON.stringify(
+                          (value as { label: string }).label,
+                          null,
+                          2
+                        )}
+                      </pre>
                     ) : (
                       <pre>{JSON.stringify(value, null, 2)}</pre>
                     )}
@@ -117,6 +128,17 @@ const Home: React.FC = () => {
                         alt="Uploaded"
                         style={{ width: '100px', height: '100px' }}
                       />
+                    ) : key === 'country' &&
+                      value &&
+                      typeof value === 'object' &&
+                      'label' in value ? (
+                      <pre>
+                        {JSON.stringify(
+                          (value as { label: string }).label,
+                          null,
+                          2
+                        )}
+                      </pre>
                     ) : (
                       <pre>{JSON.stringify(value, null, 2)}</pre>
                     )}
