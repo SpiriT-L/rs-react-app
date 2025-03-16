@@ -1,4 +1,3 @@
-// filepath: src/store/formSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface FormState {
