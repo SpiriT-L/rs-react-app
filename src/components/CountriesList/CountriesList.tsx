@@ -6,6 +6,7 @@ import {
   sortBy,
 } from '../../features/countriesSlice';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
+import Button from '../Button/Button';
 
 const CountriesList: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -36,35 +37,61 @@ const CountriesList: React.FC = () => {
           <option value="Europe">Europe</option>
           <option value="Oceania">Oceania</option>
         </select>
-        <button onClick={() => dispatch(sortBy({ key: 'name', order: 'asc' }))}>
-          Sort by Name (A-Z)
-        </button>
-        <button
-          onClick={() => dispatch(sortBy({ key: 'name', order: 'desc' }))}
-        >
-          Sort by Name (Z-A)
-        </button>
-        <button
-          onClick={() => dispatch(sortBy({ key: 'population', order: 'asc' }))}
-        >
-          Sort by Population (Asc)
-        </button>
-        <button
-          onClick={() => dispatch(sortBy({ key: 'population', order: 'desc' }))}
-        >
-          Sort by Population (Desc)
-        </button>
+        <div className="buttonList">
+          <Button
+            onClick={() => dispatch(sortBy({ key: 'name', order: 'asc' }))}
+          >
+            Sort by Name (A-Z)
+          </Button>
+          <Button
+            onClick={() => dispatch(sortBy({ key: 'name', order: 'desc' }))}
+          >
+            Sort by Name (Z-A)
+          </Button>
+          <Button
+            onClick={() =>
+              dispatch(sortBy({ key: 'population', order: 'asc' }))
+            }
+          >
+            Sort by Population (Asc)
+          </Button>
+          <Button
+            onClick={() =>
+              dispatch(sortBy({ key: 'population', order: 'desc' }))
+            }
+          >
+            Sort by Population (Desc)
+          </Button>
+        </div>
       </div>
-      <ul>
+      <ul
+        style={{
+          listStyle: 'none',
+          padding: 0,
+          margin: 0,
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+        }}
+      >
         {filteredCountries.map((country) => (
-          <li key={country.name.common}>
+          <li
+            key={country.name.common}
+            style={{
+              width: '200px',
+              margin: '1rem',
+              padding: '1rem',
+              border: '1px solid #ccc',
+              borderRadius: '10px',
+            }}
+          >
             <img
               src={country.flags.svg}
               alt={`${country.name.common} flag`}
               width="50"
             />
-            <p>{country.name.common}</p>
-            <p>Population: {country.population}</p>
+            <h3>{country.name.common}</h3>
+            <p>Population: {country.population} people</p>
             <p>Region: {country.region}</p>
           </li>
         ))}
