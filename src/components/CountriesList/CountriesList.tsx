@@ -7,6 +7,7 @@ import {
 } from '../../features/countriesSlice';
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
 import Button from '../Button/Button';
+import Input from '../Input/Input';
 
 const CountriesList: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -24,9 +25,9 @@ const CountriesList: React.FC = () => {
   return (
     <div>
       <div>
-        <input
+        <Input
           type="text"
-          placeholder="Search by name"
+          placeholder="Search"
           onChange={(e) => dispatch(searchByName(e.target.value))}
         />
         <select onChange={(e) => dispatch(filterByRegion(e.target.value))}>
