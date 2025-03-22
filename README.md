@@ -1,54 +1,35 @@
-# React + TypeScript + Vite
+## Profiling Scenario
+- Action: Sorting countries by name (A-Z).
+- Tool: React Dev Tools Profiler.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Profiling Parameters
+1. Commit Duration: Time taken for React to render the committed updates.
+   - Value: 10.7ms.
+2. Render Duration: Time taken for individual components to render.
+   - CountriesList: 4.9ms of 10.7ms.
+3. Layout Effects: Time spent on layout effects.
+   - Value: <0.1ms.
+4. Passive Effects: Time spent on passive effects.
+   - Value: <0.1ms.
+5. Interactions: User interactions that triggered the renders.
+   - Action: Sorting triggered the render.
+6. Flame Graph: Visual representation of component render times.
+   - Observation: Most of the time was spent rendering the *CountriesList* component.
+7. Ranked Chart: Sorted list of components by render duration.
+   - Observation: *CountriesList* was the most time-consuming component.
 
-Currently, two official plugins are available:
+## Performance Observations
+- The CountriesList component took 4.9ms of the total 10.7ms render time.
+- Layout effects and passive effects were negligible (<0.1ms).
+- Sorting triggered the render, and most of the time was spent rendering the list of countries.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+#### **Screenshots**
+1. **Flame Graph**  
+   ![alt text](<public/2025-03-23 011520.png>)
+   _Description: The graph shows that `CountriesList` is the primary component consuming render time._
 
-## Expanding the ESLint configuration
+2. **Ranked Chart**  
+   ![alt text](<public/2025-03-23 012004.png>)
+   _Description: The chart highlights `CountriesList` as the most time-consuming component._
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+---
