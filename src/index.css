@@ -38,3 +38,11 @@ h1 {
   margin: 1rem 0;
   justify-content: center;
 }
+
+.inputList {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+  justify-content: center;
+}

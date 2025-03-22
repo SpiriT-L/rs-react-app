@@ -8,6 +8,7 @@ import {
 import { useAppDispatch, useAppSelector } from '../../hooks/hooks';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
+import Select from '../Select/Select';
 
 const CountriesList: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -22,22 +23,29 @@ const CountriesList: React.FC = () => {
   if (status === 'loading') return <p>Loading...</p>;
   if (status === 'failed') return <p>Error: {error}</p>;
 
+  const regionOptions = [
+    { value: 'All', label: 'All Regions' },
+    { value: 'Africa', label: 'Africa' },
+    { value: 'Americas', label: 'Americas' },
+    { value: 'Asia', label: 'Asia' },
+    { value: 'Europe', label: 'Europe' },
+    { value: 'Oceania', label: 'Oceania' },
+  ];
+
   return (
     <div>
       <div>
-        <Input
-          type="text"
-          placeholder="Search"
-          onChange={(e) => dispatch(searchByName(e.target.value))}
-        />
-        <select onChange={(e) => dispatch(filterByRegion(e.target.value))}>
-          <option value="All">All Regions</option>
-          <option value="Africa">Africa</option>
-          <option value="Americas">Americas</option>
-          <option value="Asia">Asia</option>
-          <option value="Europe">Europe</option>
-          <option value="Oceania">Oceania</option>
-        </select>
+        <div className="inputList">
+          <Input
+            type="text"
+            placeholder="Search"
+            onChange={(e) => dispatch(searchByName(e.target.value))}
+          />
+          <Select
+            options={regionOptions}
+            onChange={(e) => dispatch(filterByRegion(e.target.value))}
+          />
+        </div>
         <div className="buttonList">
           <Button
             onClick={() => dispatch(sortBy({ key: 'name', order: 'asc' }))}
