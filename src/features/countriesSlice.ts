@@ -15,6 +15,8 @@ interface Country {
 interface CountriesState {
   countries: Country[];
   filteredCountries: Country[];
+  selectedRegion: string;
+  searchQuery: string;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
@@ -22,6 +24,8 @@ interface CountriesState {
 const initialState: CountriesState = {
   countries: [],
   filteredCountries: [],
+  selectedRegion: 'All',
+  searchQuery: '',
   status: 'idle',
   error: null,
 };
@@ -30,7 +34,6 @@ export const fetchCountries = createAsyncThunk(
   'countries/fetchCountries',
   async () => {
     const response = await axios.get('https://restcountries.com/v3.1/all');
-    console.log('Fetched countries data:', response.data);
     return response.data.map((country: Country) => ({
       name: country.name,
       region: country.region,
@@ -45,15 +48,27 @@ const countriesSlice = createSlice({
   initialState,
   reducers: {
     filterByRegion: (state, action: PayloadAction<string>) => {
-      state.filteredCountries = state.countries.filter(
-        (country: Country) =>
-          country.region === action.payload || action.payload === 'All'
-      );
+      state.selectedRegion = action.payload;
+      state.filteredCountries = state.countries.filter((country) => {
+        const matchesRegion =
+          action.payload === 'All' || country.region === action.payload;
+        const matchesSearch = country.name.common
+          .toLowerCase()
+          .includes(state.searchQuery.toLowerCase());
+        return matchesRegion && matchesSearch;
+      });
     },
     searchByName: (state, action: PayloadAction<string>) => {
-      state.filteredCountries = state.countries.filter((country) =>
-        country.name.common.toLowerCase().includes(action.payload.toLowerCase())
-      );
+      state.searchQuery = action.payload;
+      state.filteredCountries = state.countries.filter((country) => {
+        const matchesRegion =
+          state.selectedRegion === 'All' ||
+          country.region === state.selectedRegion;
+        const matchesSearch = country.name.common
+          .toLowerCase()
+          .includes(action.payload.toLowerCase());
+        return matchesRegion && matchesSearch;
+      });
     },
     sortBy: (
       state,
