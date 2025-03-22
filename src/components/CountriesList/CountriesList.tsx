@@ -32,6 +32,17 @@ const CountriesList: React.FC = () => {
     { value: 'Oceania', label: 'Oceania' },
   ];
 
+  const sortButtons: Array<{
+    label: string;
+    key: 'name' | 'population';
+    order: 'asc' | 'desc';
+  }> = [
+    { label: 'Sort by Name (A-Z)', key: 'name', order: 'asc' },
+    { label: 'Sort by Name (Z-A)', key: 'name', order: 'desc' },
+    { label: 'Sort by Population (Asc)', key: 'population', order: 'asc' },
+    { label: 'Sort by Population (Desc)', key: 'population', order: 'desc' },
+  ];
+
   return (
     <div>
       <div>
@@ -47,30 +58,16 @@ const CountriesList: React.FC = () => {
           />
         </div>
         <div className="buttonList">
-          <Button
-            onClick={() => dispatch(sortBy({ key: 'name', order: 'asc' }))}
-          >
-            Sort by Name (A-Z)
-          </Button>
-          <Button
-            onClick={() => dispatch(sortBy({ key: 'name', order: 'desc' }))}
-          >
-            Sort by Name (Z-A)
-          </Button>
-          <Button
-            onClick={() =>
-              dispatch(sortBy({ key: 'population', order: 'asc' }))
-            }
-          >
-            Sort by Population (Asc)
-          </Button>
-          <Button
-            onClick={() =>
-              dispatch(sortBy({ key: 'population', order: 'desc' }))
-            }
-          >
-            Sort by Population (Desc)
-          </Button>
+          {sortButtons.map((button) => (
+            <Button
+              key={`${button.key}-${button.order}`}
+              onClick={() =>
+                dispatch(sortBy({ key: button.key, order: button.order }))
+              }
+            >
+              {button.label}
+            </Button>
+          ))}
         </div>
       </div>
       <ul
