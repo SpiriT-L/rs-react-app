@@ -1,4 +1,5 @@
 .card {
+  width: 168.68px;
   border: 1px solid #ccc;
   padding: 1rem;
   border-radius: 8px;
@@ -14,6 +15,10 @@
 .visited {
   border-color: #007bff;
   background-color: #e7f3ff;
+}
+
+.name{
+  font-size: 1.25em;
 }
 
 .img{
