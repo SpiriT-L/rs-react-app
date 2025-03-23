@@ -101,7 +101,7 @@ const countriesSlice = createSlice({
         return 0;
       });
 
-      console.log('After sorting:', state.filteredCountries); // Отладочный вывод
+      console.log('After sorting:', state.filteredCountries);
     },
   },
   extraReducers: (builder) => {

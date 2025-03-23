@@ -24,7 +24,6 @@ const CountriesList: React.FC = () => {
   } = useAppSelector((state) => state.countries);
 
   const [visitedCountries, setVisitedCountries] = useState<string[]>(() => {
-    // Загружаем посещённые страны из localStorage при загрузке компонента
     const storedVisited = localStorage.getItem('visitedCountries');
     return storedVisited ? JSON.parse(storedVisited) : [];
   });
@@ -92,7 +91,6 @@ const CountriesList: React.FC = () => {
         ? prevVisited.filter((name) => name !== countryName)
         : [...prevVisited, countryName];
 
-      // Сохраняем обновлённый список в localStorage
       localStorage.setItem('visitedCountries', JSON.stringify(updatedVisited));
       return updatedVisited;
     });
@@ -162,8 +160,8 @@ const CountriesList: React.FC = () => {
           <CountryCard
             key={country.name.common}
             country={country}
-            isVisited={visitedCountries.includes(country.name.common)} // Проверяем, посещена ли страна
-            onToggleVisited={toggleVisitedCountry} // Обработчик для переключения состояния
+            isVisited={visitedCountries.includes(country.name.common)}
+            onToggleVisited={toggleVisitedCountry}
           />
         ))}
       </ul>
