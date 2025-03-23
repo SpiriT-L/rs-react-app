@@ -1,35 +1,26 @@
-## Profiling Scenario
-- Action: Sorting countries by name (A-Z).
-- Tool: React Dev Tools Profiler.
+## Profiling Results (Before and After Optimization)
 
-## Profiling Parameters
-1. Commit Duration: Time taken for React to render the committed updates.
-   - Value: 10.7ms.
-2. Render Duration: Time taken for individual components to render.
-   - CountriesList: 4.9ms of 10.7ms.
-3. Layout Effects: Time spent on layout effects.
-   - Value: <0.1ms.
-4. Passive Effects: Time spent on passive effects.
-   - Value: <0.1ms.
-5. Interactions: User interactions that triggered the renders.
-   - Action: Sorting triggered the render.
-6. Flame Graph: Visual representation of component render times.
-   - Observation: Most of the time was spent rendering the *CountriesList* component.
-7. Ranked Chart: Sorted list of components by render duration.
-   - Observation: *CountriesList* was the most time-consuming component.
+### Before Optimization
+- **Commit Duration**: 10.7ms.
+- **Render Duration**: `CountriesList` took 4.9ms of 10.7ms.
+- **Interactions**: Sorting triggered the render.
+- **Flame Graph**: Most of the time was spent rendering the `CountriesList` component.
+- **Ranked Chart**: `CountriesList` was the most time-consuming component.
 
-## Performance Observations
-- The CountriesList component took 4.9ms of the total 10.7ms render time.
-- Layout effects and passive effects were negligible (<0.1ms).
-- Sorting triggered the render, and most of the time was spent rendering the list of countries.
+![alt text](<public/2025-03-23 011520.png>)
+![alt text](<public/2025-03-23 012004.png>)
 
-#### **Screenshots**
-1. **Flame Graph**  
-   ![alt text](<public/2025-03-23 011520.png>)
-   _Description: The graph shows that `CountriesList` is the primary component consuming render time._
+### After Optimization
+- **Commit Duration**: 1.7ms (reduced by ~73.83%).
+- **Render Duration**: `CountriesList` took 1.9ms of 2.8ms.
+- **Interactions**: Sorting triggered fewer renders due to memoization.
+- **Flame Graph**: Reduced render time for `CountriesList` and its child components.
+- **Ranked Chart**: `CountryCard` render time significantly reduced due to `React.memo`.
 
-2. **Ranked Chart**  
-   ![alt text](<public/2025-03-23 012004.png>)
-   _Description: The chart highlights `CountriesList` as the most time-consuming component._
+![alt text](<public/2025-03-23 022323.png>)
+![alt text](<public/2025-03-23 022432.png>)
 
----
+### Performance Observations
+- The use of `React.memo` reduced unnecessary re-renders of `CountryCard`.
+- The use of `useMemo` optimized the filtering logic, reducing computation time.
+- Overall render time decreased by ~73.83%.

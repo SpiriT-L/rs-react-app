@@ -17,6 +17,8 @@ interface CountriesState {
   filteredCountries: Country[];
   selectedRegion: string;
   searchQuery: string;
+  sortKey: 'name' | 'population' | null;
+  sortOrder: 'asc' | 'desc' | null;
   status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
@@ -26,6 +28,8 @@ const initialState: CountriesState = {
   filteredCountries: [],
   selectedRegion: 'All',
   searchQuery: '',
+  sortKey: null,
+  sortOrder: null,
   status: 'idle',
   error: null,
 };
@@ -77,14 +81,27 @@ const countriesSlice = createSlice({
         order: 'asc' | 'desc';
       }>
     ) => {
-      const { key, order } = action.payload;
+      state.sortKey = action.payload.key;
+      state.sortOrder = action.payload.order;
+
       state.filteredCountries = [...state.filteredCountries].sort((a, b) => {
-        if (order === 'asc') {
-          return a[key] > b[key] ? 1 : -1;
+        if (state.sortOrder === 'asc') {
+          if (state.sortKey === 'name') {
+            return a.name.common.localeCompare(b.name.common);
+          } else if (state.sortKey === 'population') {
+            return a.population - b.population;
+          }
         } else {
-          return a[key] < b[key] ? 1 : -1;
+          if (state.sortKey === 'name') {
+            return b.name.common.localeCompare(a.name.common);
+          } else if (state.sortKey === 'population') {
+            return b.population - a.population;
+          }
         }
+        return 0;
       });
+
+      console.log('After sorting:', state.filteredCountries); // Отладочный вывод
     },
   },
   extraReducers: (builder) => {
