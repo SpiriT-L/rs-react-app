@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   fetchCountries,
   filterByRegion,
@@ -22,6 +22,12 @@ const CountriesList: React.FC = () => {
     status,
     error,
   } = useAppSelector((state) => state.countries);
+
+  const [visitedCountries, setVisitedCountries] = useState<string[]>(() => {
+    // Загружаем посещённые страны из localStorage при загрузке компонента
+    const storedVisited = localStorage.getItem('visitedCountries');
+    return storedVisited ? JSON.parse(storedVisited) : [];
+  });
 
   const filteredCountries = useMemo(() => {
     let result = countries;
@@ -78,6 +84,19 @@ const CountriesList: React.FC = () => {
     },
     [dispatch]
   );
+
+  const toggleVisitedCountry = useCallback((countryName: string) => {
+    setVisitedCountries((prevVisited) => {
+      const isVisited = prevVisited.includes(countryName);
+      const updatedVisited = isVisited
+        ? prevVisited.filter((name) => name !== countryName)
+        : [...prevVisited, countryName];
+
+      // Сохраняем обновлённый список в localStorage
+      localStorage.setItem('visitedCountries', JSON.stringify(updatedVisited));
+      return updatedVisited;
+    });
+  }, []);
 
   const activeSort = useMemo(
     () => `${sortKey}-${sortOrder}`,
@@ -136,10 +155,16 @@ const CountriesList: React.FC = () => {
           display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'center',
+          gap: '2rem',
         }}
       >
         {filteredCountries.map((country) => (
-          <CountryCard key={country.name.common} country={country} />
+          <CountryCard
+            key={country.name.common}
+            country={country}
+            isVisited={visitedCountries.includes(country.name.common)} // Проверяем, посещена ли страна
+            onToggleVisited={toggleVisitedCountry} // Обработчик для переключения состояния
+          />
         ))}
       </ul>
     </div>
